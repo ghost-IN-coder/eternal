@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breakout | Tactical Games</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    #breakout-canvas{ display: block; margin: 20px auto; background: #000; border: 2px solid var(--neon-1); }
+    .breakout-hud{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; max-width: 400px; margin: 20px auto; }
+    .breakout-stat{ background: #0f0f0f; border: 1px solid var(--neon-1); padding: 10px; text-align: center; }
+    .breakout-label{ color: #666; font-size: 12px; }
+    .breakout-value{ color: var(--neon-1); font-size: 20px; font-weight: bold; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="../index.html" class="nav-link">HOME</a>
+    <a href="../missions.html" class="nav-link">MISSIONS</a>
+    <a href="tictactoe.html" class="nav-link">TIC-TAC-TOE</a>
+    <a href="memory.html" class="nav-link">MEMORY</a>
+    <a href="snake.html" class="nav-link">SNAKE</a>
+    <a href="breakout.html" class="nav-link active">BREAKOUT</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>💥 BREAKOUT ASSAULT</h1>
+    <p>Destroy all bricks before the ball escapes. Mouse to move paddle.</p>
+    <div class="breakout-hud">
+      <div class="breakout-stat">
+        <div class="breakout-label">SCORE</div>
+        <div class="breakout-value" id="breakout-score">0</div>
+      </div>
+      <div class="breakout-stat">
+        <div class="breakout-label">BRICKS</div>
+        <div class="breakout-value" id="breakout-bricks">20</div>
+      </div>
+      <div class="breakout-stat">
+        <div class="breakout-label">LIVES</div>
+        <div class="breakout-value" id="breakout-lives">3</div>
+      </div>
+    </div>
+    <canvas id="breakout-canvas" width="400" height="500"></canvas>
+    <p id="breakout-status" style="color: var(--neon-2); margin-top: 15px; font-weight: bold;"></p>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+      <button id="reset-breakout" style="margin-top: 20px;">NEW GAME</button>
+      <button id="pause-breakout" style="margin-top: 20px;">PAUSE</button>
+    </div>
+  </main>
+
+  <script src="../js/games-common.js"></script>
+  <script>
+    const canvas = document.getElementById('breakout-canvas');
+    const ctx = canvas.getContext('2d');
+    let paddle = {x: canvas.width/2 - 40, y: canvas.height - 20, w: 80, h: 10};
+    let ball = {x: canvas.width/2, y: canvas.height - 40, vx: 3, vy: -3, r: 5};
+    let bricks = [], score = 0, lives = 3, gameActive = true, gamePaused = false;
+    let mouseX = canvas.width / 2;
+
+    function initBricks(){
+      bricks = [];
+      const cols = 10, rows = 2;
+      for(let r = 0; r < rows; r++){
+        for(let c = 0; c < cols; c++){
+          bricks.push({x: c * 40, y: 30 + r * 20, w: 38, h: 18, alive: true});
+        }
+      }
+    }
+
+    function update(){
+      if(!gameActive || gamePaused) return;
+      paddle.x = Math.max(0, Math.min(canvas.width - paddle.w, mouseX - paddle.w/2));
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+      
+      if(ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) ball.vx *= -1;
+      if(ball.y - ball.r < 0) ball.vy *= -1;
+
+      bricks.forEach(b=>{
+        if(b.alive && ball.x + ball.r > b.x && ball.x - ball.r < b.x + b.w && 
+           ball.y + ball.r > b.y && ball.y - ball.r < b.y + b.h){
+          b.alive = false;
+          score += 10;
+          ball.vy *= -1;
+          playSound('click');
+          document.getElementById('breakout-score').textContent = score;
+          document.getElementById('breakout-bricks').textContent = bricks.filter(x=>x.alive).length;
+        }
+      });
+
+      if(ball.y + ball.r > paddle.y && ball.x > paddle.x && ball.x < paddle.x + paddle.w){
+        ball.vy *= -1;
+        ball.y = paddle.y - ball.r;
+        playSound('place');
+      }
+
+      if(ball.y > canvas.height){
+        lives--;
+        document.getElementById('breakout-lives').textContent = lives;
+        if(lives <= 0){
+          gameActive = false;
+          playSound('fail');
+          document.getElementById('breakout-status').textContent = 'MISSION FAILED';
+        } else {
+          ball = {x: paddle.x + paddle.w/2, y: canvas.height - 40, vx: 3, vy: -3, r: 5};
+        }
+      }
+
+      if(bricks.every(b=>!b.alive)){
+        gameActive = false;
+        playSound('win');
+        document.getElementById('breakout-status').textContent = 'ALL BRICKS DESTROYED!';
+        addXP(200, 'breakout');
+      }
+    }
+
+    function draw(){
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#0f0';
+      ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = '#00ffea';
+      bricks.forEach(b=>{
+        if(b.alive) ctx.fillRect(b.x, b.y, b.w, b.h);
+      });
+    }
+
+    function gameLoop(){
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    canvas.addEventListener('mousemove', (e)=>{
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+    });
+
+    document.getElementById('reset-breakout').addEventListener('click', ()=>{
+      paddle = {x: canvas.width/2 - 40, y: canvas.height - 20, w: 80, h: 10};
+      ball = {x: canvas.width/2, y: canvas.height - 40, vx: 3, vy: -3, r: 5};
+      score = 0;
+      lives = 3;
+      gameActive = true;
+      gamePaused = false;
+      document.getElementById('breakout-score').textContent = '0';
+      document.getElementById('breakout-lives').textContent = '3';
+      document.getElementById('breakout-status').textContent = '';
+      document.getElementById('pause-breakout').textContent = 'PAUSE';
+      initBricks();
+      document.getElementById('breakout-bricks').textContent = bricks.length;
+    });
+
+    document.getElementById('pause-breakout').addEventListener('click', ()=>{
+      if(!gameActive) return;
+      gamePaused = !gamePaused;
+      document.getElementById('pause-breakout').textContent = gamePaused ? 'RESUME' : 'PAUSE';
+      playSound('click');
+    });
+
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    initBricks();
+    gameLoop();
+  </script>
+</body>
+</html>

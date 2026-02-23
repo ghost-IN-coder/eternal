@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hangman | Tactical Games</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .hangman-container{ max-width: 500px; margin: 20px auto; background: #0f0f0f; padding: 20px; border: 2px solid var(--neon-1); border-radius: 4px; }
+    .hangman-word{ font-size: 32px; letter-spacing: 10px; text-align: center; color: var(--neon-1); margin: 20px 0; font-weight: bold; font-family: monospace; }
+    .hangman-guesses{ text-align: center; color: #999; margin: 10px 0; font-size: 14px; }
+    .hangman-keyboard{ display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin: 20px 0; }
+    .letter-btn{ padding: 8px; background: #1a1a1a; border: 1px solid var(--neon-2); color: var(--neon-2); cursor: pointer; border-radius: 3px; font-weight: bold; transition: all 0.2s; }
+    .letter-btn:hover{ box-shadow: 0 0 5px var(--neon-2); }
+    .letter-btn:disabled{ opacity: 0.3; cursor: not-allowed; background: #333; }
+    .hangman-stats{ display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+    .stat-box{ background: #1a1a1a; border: 1px solid var(--neon-1); padding: 10px; text-align: center; }
+    .stat-label{ color: #666; font-size: 12px; }
+    .stat-value{ color: var(--neon-1); font-size: 20px; font-weight: bold; margin-top: 5px; }
+    #hangman-status{ font-size: 18px; font-weight: bold; color: var(--neon-2); text-align: center; min-height: 25px; margin: 15px 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="../index.html" class="nav-link">HOME</a>
+    <a href="../missions.html" class="nav-link">MISSIONS</a>
+    <a href="tictactoe.html" class="nav-link">TIC-TAC-TOE</a>
+    <a href="memory.html" class="nav-link">MEMORY</a>
+    <a href="snake.html" class="nav-link">SNAKE</a>
+    <a href="hangman.html" class="nav-link active">HANGMAN</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>🎯 HANGMAN PROTOCOL</h1>
+    <p>Decode the word before running out of attempts.</p>
+
+    <div class="hangman-container">
+      <div class="hangman-word" id="hangman-word">_ _ _ _ _ _</div>
+      <div class="hangman-guesses">Wrong: <span id="wrong-letters"></span></div>
+      <div class="hangman-keyboard" id="hangman-keyboard"></div>
+      <div id="hangman-status"></div>
+      <div class="hangman-stats">
+        <div class="stat-box">
+          <div class="stat-label">WINS</div>
+          <div class="stat-value" id="hangman-wins">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">ATTEMPTS LEFT</div>
+          <div class="stat-value" id="hangman-attempts">6</div>
+        </div>
+      </div>
+      <button id="reset-hangman" style="width: 100%; margin-top: 15px;">NEW WORD</button>
+    </div>
+  </main>
+
+  <script src="../js/games-common.js"></script>
+  <script>
+    const words = ['STEALTH', 'MISSION', 'TACTICS', 'ENCRYPT', 'DEFEND', 'ASSAULT', 'INFILTRATE', 'SABOTAGE', 'PROTOCOL', 'COMMAND', 'OPERATIONS', 'CLASSIFIED', 'AGENT', 'INTEL', 'SECURE', 'BREACH'];
+    let word, guessed, wrong, wins = hget('hangman_wins', 0), attempts, gameActive;
+
+    function initGame(){
+      word = words[Math.floor(Math.random() * words.length)].toUpperCase();
+      guessed = new Set();
+      wrong = new Set();
+      attempts = 6;
+      gameActive = true;
+      document.getElementById('hangman-wins').textContent = wins;
+      document.getElementById('hangman-status').textContent = '';
+      renderKeyboard();
+      renderWord();
+      updateStats();
+    }
+
+    function renderKeyboard(){
+      const kb = document.getElementById('hangman-keyboard');
+      kb.innerHTML = '';
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter=>{
+        const btn = document.createElement('button');
+        btn.className = 'letter-btn';
+        btn.textContent = letter;
+        btn.disabled = guessed.has(letter) || wrong.has(letter);
+        btn.addEventListener('click', ()=>guessLetter(letter));
+        kb.appendChild(btn);
+      });
+    }
+
+    function guessLetter(letter){
+      if(guessed.has(letter) || wrong.has(letter) || !gameActive) return;
+      playSound('click');
+      if(word.includes(letter)){
+        guessed.add(letter);
+      } else {
+        wrong.add(letter);
+        attempts--;
+      }
+      renderWord();
+      updateStats();
+      renderKeyboard();
+      checkStatus();
+    }
+
+    function renderWord(){
+      const display = word.split('').map(l=>guessed.has(l) ? l : '_').join(' ');
+      document.getElementById('hangman-word').textContent = display;
+      document.getElementById('wrong-letters').textContent = Array.from(wrong).join(', ') || 'None';
+    }
+
+    function updateStats(){
+      document.getElementById('hangman-attempts').textContent = attempts;
+    }
+
+    function checkStatus(){
+      if(word.split('').every(l=>guessed.has(l))){
+        gameActive = false;
+        playSound('win');
+        wins++;
+        hset('hangman_wins', wins);
+        addXP(150, 'hangman');
+        document.getElementById('hangman-status').textContent = '✓ DECODED! (' + word + ')';
+        document.getElementById('hangman-wins').textContent = wins;
+      } else if(attempts <= 0){
+        gameActive = false;
+        playSound('fail');
+        document.getElementById('hangman-status').textContent = '✗ MISSION FAILED (Answer: ' + word + ')';
+      }
+    }
+
+    document.getElementById('reset-hangman').addEventListener('click', initGame);
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    initGame();
+  </script>
+</body>
+</html>

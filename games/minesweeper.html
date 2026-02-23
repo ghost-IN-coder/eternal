@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minesweeper | Tactical Games</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .difficulty-selector{ display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+    .difficulty-btn{ padding: 8px 16px; border: 2px solid var(--neon-2); background: transparent; color: var(--neon-2); cursor: pointer; border-radius: 4px; font-weight: bold; transition: all 0.3s; }
+    .difficulty-btn.active{ background: var(--neon-2); color: var(--bg); box-shadow: 0 0 10px var(--neon-2); }
+    .mine-grid{ display: inline-grid; gap: 4px; margin: 20px auto; background: #111; padding: 10px; border: 2px solid var(--neon-1); }
+    .mine-cell{ width: 40px; height: 40px; background: #0f0f0f; border: 1px solid #333; cursor: pointer; font-weight: bold; color: var(--neon-2); display: flex; align-items: center; justify-content: center; user-select: none; transition: all 0.2s; }
+    .mine-cell:hover{ box-shadow: inset 0 0 8px var(--neon-1); }
+    .mine-cell.revealed{ background: #1a1a1a; border-color: var(--neon-1); }
+    .mine-cell.flagged{ color: var(--neon-2); font-size: 14px; }
+    .mine-cell.mine-hit{ background: #660000; border-color: #ff3333; }
+    .mine-cell.safe{ color: #666; }
+    .mine-hud{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .mine-stat{ background: #0f0f0f; border: 1px solid var(--neon-1); padding: 10px; text-align: center; }
+    .mine-stat-label{ color: #666; font-size: 12px; }
+    .mine-stat-value{ color: var(--neon-1); font-size: 20px; font-weight: bold; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="../index.html" class="nav-link">HOME</a>
+    <a href="../missions.html" class="nav-link">MISSIONS</a>
+    <a href="tictactoe.html" class="nav-link">TIC-TAC-TOE</a>
+    <a href="memory.html" class="nav-link">MEMORY</a>
+    <a href="snake.html" class="nav-link">SNAKE</a>
+    <a href="minesweeper.html" class="nav-link active">MINESWEEPER</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>⚠️ MINESWEEPER</h1>
+    <p>Clear the grid without detonating mines. Right-click to flag.</p>
+
+    <div class="difficulty-selector">
+      <button class="difficulty-btn active" data-diff="easy">EASY (8x8)</button>
+      <button class="difficulty-btn" data-diff="medium">MEDIUM (12x12)</button>
+      <button class="difficulty-btn" data-diff="hard">HARD (16x16)</button>
+    </div>
+
+    <div class="mine-hud">
+      <div class="mine-stat">
+        <div class="mine-stat-label">MINES</div>
+        <div class="mine-stat-value" id="mine-count">10</div>
+      </div>
+      <div class="mine-stat">
+        <div class="mine-stat-label">FLAGS</div>
+        <div class="mine-stat-value" id="flag-count">0</div>
+      </div>
+      <div class="mine-stat">
+        <div class="mine-stat-label">TIME</div>
+        <div class="mine-stat-value" id="mine-time">0s</div>
+      </div>
+      <div class="mine-stat">
+        <div class="mine-stat-label">CLICKS</div>
+        <div class="mine-stat-value" id="click-count">0</div>
+      </div>
+    </div>
+
+    <div class="mine-grid" id="mine-grid"></div>
+
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+      <button id="reset-mines" style="margin-top: 20px;">NEW GAME</button>
+      <button id="pause-mines" style="margin-top: 20px;">PAUSE</button>
+      <button id="hint-mines" style="margin-top: 20px; background: #1a1a1a; border: 1px solid var(--neon-2);">💡 HINT</button>
+    </div>
+    <p id="mine-status" style="color: var(--neon-1); margin-top: 15px; font-weight: bold; min-height: 20px;"></p>
+  </main>
+
+  <script src="../js/games-common.js"></script>
+  <script>
+    const difficulties = {easy: {size: 8, mines: 10}, medium: {size: 12, mines: 30}, hard: {size: 16, mines: 50}};
+    let current = 'easy', grid, gameActive, startTime, flagCount, mineCount, clickCount;
+
+    function initMinesweeper(){
+      const {size, mines} = difficulties[current];
+      grid = Array(size*size).fill(0);
+      let placed = 0;
+      while(placed < mines){
+        const idx = Math.floor(Math.random() * grid.length);
+        if(grid[idx] !== -1){ grid[idx] = -1; placed++; }
+      }
+      for(let i=0; i<grid.length; i++){
+        if(grid[i] !== -1){
+          let count = 0;
+          const row = Math.floor(i / size);
+          const col = i % size;
+          for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+            const nr = row + dr, nc = col + dc;
+            if(nr>=0 && nr<size && nc>=0 && nc<size && grid[nr*size+nc] === -1) count++;
+          }
+          grid[i] = count;
+        }
+      }
+      gameActive = true; flagCount = 0; mineCount = mines; startTime = Date.now(); clickCount = 0;
+      renderGrid();
+      document.getElementById('mine-count').textContent = mines;
+      document.getElementById('click-count').textContent = '0';
+      updateHUD();
+    }
+
+    function renderGrid(){
+      const {size} = difficulties[current];
+      const gridEl = document.getElementById('mine-grid');
+      gridEl.innerHTML = '';
+      gridEl.style.gridTemplateColumns = `repeat(${size}, 40px)`;
+      for(let i=0; i<grid.length; i++){
+        const cell = document.createElement('div');
+        cell.className = 'mine-cell';
+        if(grid[i] === undefined) grid[i] = {revealed: false, flagged: false, value: 0};
+        const state = grid[i];
+        if(state.revealed){
+          cell.classList.add('revealed');
+          if(state.value === -1) cell.classList.add('mine-hit');
+          else if(state.value > 0){ cell.textContent = state.value; cell.style.color = ['','#00ff00','#00ffff','#ffff00','#ff6600'][Math.min(state.value, 4)]; }
+          else cell.classList.add('safe');
+        } else if(state.flagged){
+          cell.classList.add('flagged');
+          cell.textContent = '🚩';
+        }
+        cell.addEventListener('click', ()=>reveal(i));
+        cell.addEventListener('contextmenu', (e)=>{ e.preventDefault(); flag(i); });
+        gridEl.appendChild(cell);
+      }
+    }
+
+    function reveal(idx){
+      if(!gameActive) return;
+      const state = grid[idx];
+      if(state.flagged || state.revealed) return;
+      state.revealed = true;
+      clickCount++;
+      document.getElementById('click-count').textContent = clickCount;
+      if(state.value === -1){
+        playSound('fail');
+        gameActive = false;
+        document.getElementById('mine-status').textContent = '💥 DETONATED';
+        renderGrid();
+        return;
+      }
+      playSound('click');
+      if(state.value === 0){
+        const {size} = difficulties[current];
+        const row = Math.floor(idx / size), col = idx % size;
+        for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+          const nr = row+dr, nc = col+dc;
+          if(nr>=0 && nr<size && nc>=0 && nc<size) reveal(nr*size+nc);
+        }
+      }
+      renderGrid();
+      checkWin();
+    }
+
+    function flag(idx){
+      if(!gameActive) return;
+      const state = grid[idx];
+      if(state.revealed) return;
+      state.flagged = !state.flagged;
+      if(state.flagged) { flagCount++; playSound('place'); } else { flagCount--; }
+      updateHUD();
+      renderGrid();
+    }
+
+    function checkWin(){
+      let revealed = 0, total = grid.length;
+      for(let s of grid) if(s.revealed) revealed++;
+      if(revealed === total - mineCount){
+        playSound('win');
+        gameActive = false;
+        const time = Math.round((Date.now() - startTime) / 1000);
+        addXP(Math.max(100, 500 - time * 5), 'minesweeper');
+        document.getElementById('mine-status').textContent = `✓ GRID CLEARED (${time}s)`;
+      }
+    }
+
+    function updateHUD(){
+      document.getElementById('flag-count').textContent = flagCount;
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+      document.getElementById('mine-time').textContent = elapsed + 's';
+    }
+
+    document.querySelectorAll('.difficulty-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.difficulty-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        current = btn.dataset.diff;
+        initMinesweeper();
+      });
+    });
+
+    document.getElementById('reset-mines').addEventListener('click', initMinesweeper);
+    document.getElementById('pause-mines').addEventListener('click', ()=>{
+      if(!gameActive) return;
+      gameActive = !gameActive;
+      document.getElementById('pause-mines').textContent = gameActive ? 'PAUSE' : 'RESUME';
+      playSound('click');
+    });
+    document.getElementById('hint-mines').addEventListener('click', ()=>{
+      if(!gameActive) return;
+      let safeCells = [];
+      for(let i=0; i<grid.length; i++){
+        if(grid[i].value !== -1 && !grid[i].revealed && !grid[i].flagged) safeCells.push(i);
+      }
+      if(safeCells.length > 0){
+        const hint = safeCells[Math.floor(Math.random() * safeCells.length)];
+        reveal(hint);
+        playSound('eat');
+      }
+    });
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+
+    setInterval(updateHUD, 100);
+    initMinesweeper();
+  </script>
+</body>
+</html>

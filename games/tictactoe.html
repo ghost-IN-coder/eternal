@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tic-Tac-Toe</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="../js/games-common.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="../index.html">HOME</a>
+    <a href="../index.html#games">ARCADE</a>
+    <a href="../missions.html">MISSIONS</a>
+    <a href="../gear.html">GEAR</a>
+    <a href="../highscores.html">HIGH SCORES</a>
+    <a href="../about.html">ABOUT</a>
+    <a href="../contact.html">CONTACT</a>
+    <button id="navMuteBtn" class="btn">🔊</button>
+  </nav>
+  <div class="wrap">
+    <h1>Tic‑Tac‑Toe</h1>
+    <div class="board" id="board"></div>
+    <div class="info">
+      <div id="status">Turn: X</div>
+      <div class="scores">
+        <span id="scoreX">X wins: 0</span> · <span id="scoreO">O wins: 0</span> · <span id="scoreD">Draws: 0</span>
+      </div>
+      <div class="mt-8 flex-center">
+        <button id="muteBtn" class="btn">🔊</button>
+      </div>
+      <button class="btn" id="reset">Reset</button>
+      <div class="mt-8"><a href="../index.html" class="card-link">← Back</a></div>
+    </div>
+  </div>
+
+  <script>
+    // shared helper available at ../js/games-common.js
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const resetBtn = document.getElementById('reset');
+    const scoreXEl = document.getElementById('scoreX');
+    const scoreOEl = document.getElementById('scoreO');
+    const scoreDEl = document.getElementById('scoreD');
+    const muteBtn = document.getElementById('muteBtn');
+
+    let board = Array(9).fill('');
+    let turn = 'X';
+    let over = false;
+
+    const wins = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+
+    function render(){
+      boardEl.innerHTML = '';
+      board.forEach((val,i)=>{
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = val;
+        cell.addEventListener('click', ()=> play(i));
+        boardEl.appendChild(cell);
+      });
+    }
+
+    function checkWin(b){
+      for(const line of wins){
+        const [a,b1,c] = line;
+        if(b[a] && b[a] === b[b1] && b[a] === b[c]) return b[a];
+      }
+      if(b.every(Boolean)) return 'T';
+      return null;
+    }
+
+    function play(i){
+      if(over || board[i]) return;
+      board[i] = turn;
+      playSound('place');
+      const res = checkWin(board);
+      if(res){
+        over = true;
+        if(res === 'T') statusEl.textContent = 'Draw!';
+        else statusEl.textContent = res + ' wins!';
+        playSound('win');
+        // persist scores
+        const keyX = 'tictactoe_X_wins';
+        const keyO = 'tictactoe_O_wins';
+        const keyD = 'tictactoe_draws';
+        if(res === 'T'){ hset(keyD, (hget(keyD,0)||0)+1); }
+        else if(res === 'X'){ hset(keyX, (hget(keyX,0)||0)+1); }
+        else if(res === 'O'){ hset(keyO, (hget(keyO,0)||0)+1); }
+        updateScores();
+      } else {
+        turn = turn === 'X' ? 'O' : 'X';
+        statusEl.textContent = 'Turn: ' + turn;
+      }
+      render();
+    }
+
+    function updateScores(){ scoreXEl.textContent = 'X wins: ' + (hget('tictactoe_X_wins',0)||0); scoreOEl.textContent = 'O wins: ' + (hget('tictactoe_O_wins',0)||0); scoreDEl.textContent = 'Draws: ' + (hget('tictactoe_draws',0)||0); }
+
+    resetBtn.addEventListener('click', ()=>{
+      board = Array(9).fill(''); turn='X'; over=false; statusEl.textContent='Turn: X'; render();
+    });
+
+    render();
+    // init persisted scores when common script available
+    setTimeout(()=>{ if(window.hget) updateScores(); }, 200);
+    // mute button wiring
+    setTimeout(()=>{
+      try{ if(window.isMuted && window.isMuted()) muteBtn.textContent='🔇'; else muteBtn.textContent='🔊'; }catch(e){}
+      muteBtn.addEventListener('click', ()=>{ try{ const m = window.toggleMute(); muteBtn.textContent = m ? '🔇' : '🔊'; }catch(e){} });
+      // nav mute button (if present)
+      try{ const navBtn = document.getElementById('navMuteBtn'); if(navBtn){ navBtn.textContent = (window.isMuted && window.isMuted()) ? '🔇' : '🔊'; navBtn.addEventListener('click', ()=>{ const m = window.toggleMute(); navBtn.textContent = m ? '🔇' : '🔊'; muteBtn.textContent = navBtn.textContent; }); } }catch(e){}
+    },150);
+  </script>
+</body>
+</html>

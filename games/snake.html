@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Snake</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="../js/games-common.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="../index.html">HOME</a>
+    <a href="../index.html#games">ARCADE</a>
+    <a href="../missions.html">MISSIONS</a>
+    <a href="../gear.html">GEAR</a>
+    <a href="../highscores.html">HIGH SCORES</a>
+    <a href="../about.html">ABOUT</a>
+    <a href="../contact.html">CONTACT</a>
+    <button id="navMuteBtn" class="btn">🔊</button>
+  </nav>
+  <div class="wrap">
+    <h1>Snake</h1>
+    <canvas id="c" width="360" height="360"></canvas>
+    <div class="hud">
+      <div>Score: <span id="score">0</span></div>
+      <div>Best: <span id="best">0</span></div>
+      <div><button id="muteBtn" class="btn">🔊</button></div>
+      <div>
+        <button class="btn" id="start">Start</button>
+        <button class="btn" id="restart">Restart</button>
+      </div>
+      <div class="mt-8"><a href="../index.html" class="card-link">← Back</a></div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const startBtn = document.getElementById('start');
+    const restartBtn = document.getElementById('restart');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+
+    const scale = 18;
+    const cols = canvas.width / scale;
+    const rows = canvas.height / scale;
+
+    let snake, food, dir, running, loopId;
+
+    function init(){
+      snake = [{x:Math.floor(cols/2), y:Math.floor(rows/2)}];
+      dir = {x:1,y:0};
+      placeFood();
+      running = false;
+      draw();
+    }
+
+    function placeFood(){
+      food = { x: Math.floor(Math.random()*cols), y: Math.floor(Math.random()*rows) };
+    }
+
+    function draw(){
+      ctx.fillStyle = '#001'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      // food
+      ctx.fillStyle = '#ffcc00'; ctx.fillRect(food.x*scale, food.y*scale, scale, scale);
+      // snake
+      ctx.fillStyle = '#00ff99';
+      snake.forEach((s,i)=> ctx.fillRect(s.x*scale+2, s.y*scale+2, scale-4, scale-4));
+    }
+
+    function step(){
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+      // wrap
+      if(head.x < 0) head.x = cols-1; if(head.x >= cols) head.x = 0;
+      if(head.y < 0) head.y = rows-1; if(head.y >= rows) head.y = 0;
+      // collision
+      if(snake.some(s => s.x === head.x && s.y === head.y)) return gameOver();
+      snake.unshift(head);
+      if(head.x === food.x && head.y === food.y){ placeFood(); }
+      else snake.pop();
+      draw();
+      scoreEl.textContent = snake.length-1;
+      const best = hget('snake_high',0)||0; if(snake.length-1 > best){ hset('snake_high', snake.length-1); bestEl.textContent = snake.length-1; }
+    }
+
+    function gameOver(){
+      running = false; clearInterval(loopId);
+      setTimeout(()=> alert('Game Over — Score: ' + (snake.length-1)), 50);
+      playSound('fail');
+    }
+
+    document.addEventListener('keydown', e=>{
+      const k = e.key;
+      if(k === 'ArrowUp' && dir.y !== 1) dir = {x:0,y:-1};
+      if(k === 'ArrowDown' && dir.y !== -1) dir = {x:0,y:1};
+      if(k === 'ArrowLeft' && dir.x !== 1) dir = {x:-1,y:0};
+      if(k === 'ArrowRight' && dir.x !== -1) dir = {x:1,y:0};
+    });
+
+    startBtn.addEventListener('click', ()=>{
+      if(running) return; running = true; loopId = setInterval(step, 120);
+    });
+    restartBtn.addEventListener('click', ()=>{ clearInterval(loopId); init(); });
+
+    init();
+    // load best
+    setTimeout(()=>{ if(window.hget){ const b = hget('snake_high',0)||0; bestEl.textContent = b; } }, 200);
+
+    // mute button wiring
+    setTimeout(()=>{
+      const mb = document.getElementById('muteBtn');
+      try{ if(window.isMuted && window.isMuted()) mb.textContent='🔇'; else mb.textContent='🔊'; }catch(e){}
+      mb.addEventListener('click', ()=>{ try{ const m = window.toggleMute(); mb.textContent = m ? '🔇' : '🔊'; }catch(e){} });
+      try{ const navBtn = document.getElementById('navMuteBtn'); if(navBtn){ navBtn.textContent = (window.isMuted && window.isMuted()) ? '🔇' : '🔊'; navBtn.addEventListener('click', ()=>{ const m = window.toggleMute(); navBtn.textContent = m ? '🔇' : '🔊'; mb.textContent = navBtn.textContent; }); } }catch(e){}
+    },150);
+  </script>
+</body>
+</html>

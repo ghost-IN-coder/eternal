@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong | Tactical Games</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    #pong-canvas{ display: block; margin: 20px auto; background: #000; border: 2px solid var(--neon-1); }
+    .pong-hud{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; max-width: 400px; margin: 20px auto; }
+    .pong-stat{ background: #0f0f0f; border: 1px solid var(--neon-1); padding: 10px; text-align: center; }
+    .pong-stat-label{ color: #666; font-size: 12px; }
+    .pong-stat-value{ color: var(--neon-1); font-size: 20px; font-weight: bold; margin-top: 5px; }
+    .pong-instruction{ color: var(--neon-2); margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="../index.html" class="nav-link">HOME</a>
+    <a href="../missions.html" class="nav-link">MISSIONS</a>
+    <a href="tictactoe.html" class="nav-link">TIC-TAC-TOE</a>
+    <a href="memory.html" class="nav-link">MEMORY</a>
+    <a href="snake.html" class="nav-link">SNAKE</a>
+    <a href="pong.html" class="nav-link active">PONG</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>🏓 PONG BATTLE</h1>
+    <p>You vs AI. W/S to move your paddle. First to 5 points wins.</p>
+    <div class="pong-instruction" id="pong-status">CLICK TO START</div>
+    <canvas id="pong-canvas" width="400" height="300"></canvas>
+    <div class="pong-hud">
+      <div class="pong-stat">
+        <div class="pong-stat-label">YOU</div>
+        <div class="pong-stat-value" id="pong-player">0</div>
+      </div>
+      <div class="pong-stat">
+        <div class="pong-stat-label">RALLY</div>
+        <div class="pong-stat-value" id="pong-rally">0</div>
+      </div>
+      <div class="pong-stat">
+        <div class="pong-stat-label">AI</div>
+        <div class="pong-stat-value" id="pong-ai">0</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+      <button id="reset-pong" style="margin-top: 20px;">NEW MATCH</button>
+      <button id="pause-pong" style="margin-top: 20px;">PAUSE</button>
+      <button id="speed-pong" style="margin-top: 20px; background: #1a1a1a; border: 1px solid var(--neon-2);">⚡ SPEED</button>
+    </div>
+  </main>
+
+  <script src="../js/games-common.js"></script>
+  <script>
+    const canvas = document.getElementById('pong-canvas');
+    const ctx = canvas.getContext('2d');
+    const paddleH = 60, paddleW = 8;
+    let player = {x: 10, y: canvas.height/2 - paddleH/2, width: paddleW, height: paddleH, dy: 0};
+    let ai = {x: canvas.width - 18, y: canvas.height/2 - paddleH/2, width: paddleW, height: paddleH, dy: 0};
+    let ball = {x: canvas.width/2, y: canvas.height/2, vx: 4, vy: 4, r: 4};
+    let pScore = 0, aScore = 0, rally = 0, gameActive = false, wins = hget('pong_wins', 0), gamePaused = false, speedMode = false;
+    const keys = {};
+
+    document.addEventListener('keydown', (e)=>{ keys[e.key] = true; });
+    document.addEventListener('keyup', (e)=>{ keys[e.key] = false; });
+
+    function update(){
+      if(!gameActive || gamePaused) return;
+      if(keys['w'] || keys['W']) player.y = Math.max(0, player.y - 6);
+      if(keys['s'] || keys['S']) player.y = Math.min(canvas.height - player.height, player.y + 6);
+      ai.y = Math.max(0, Math.min(canvas.height - ai.height, ai.y + (ball.y > ai.y + ai.height/2 ? (speedMode ? 7 : 5) : -(speedMode ? 7 : 5))));
+      
+      ball.x += ball.vx; ball.y += ball.vy;
+      if(ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) ball.vy *= -1;
+      
+      if(ball.x - ball.r < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height){
+        ball.vx = Math.abs(ball.vx) + 0.5;
+        ball.x = player.x + player.width + ball.r;
+        rally++;
+        playSound('click');
+      }
+      if(ball.x + ball.r > ai.x && ball.y > ai.y && ball.y < ai.y + ai.height){
+        ball.vx = -(Math.abs(ball.vx) + 0.5);
+        ball.x = ai.x - ball.r;
+        playSound('click');
+      }
+      
+      if(ball.x < 0){ aScore++; rally = 0; resetBall(); playSound('fail'); }
+      if(ball.x > canvas.width){ pScore++; rally = 0; resetBall(); playSound('eat'); }
+      
+      if(pScore >= 5 || aScore >= 5){
+        gameActive = false;
+        const result = pScore >= 5 ? 'YOU WIN!' : 'AI WINS';
+        document.getElementById('pong-status').textContent = result;
+        if(pScore >= 5){ wins++; hset('pong_wins', wins); addXP(200, 'pong'); }
+      }
+      document.getElementById('pong-player').textContent = pScore;
+      document.getElementById('pong-ai').textContent = aScore;
+      document.getElementById('pong-rally').textContent = rally;
+    }
+
+    function resetBall(){
+      ball = {x: canvas.width/2, y: canvas.height/2, vx: (Math.random()>0.5?1:-1)*4, vy: (Math.random()-0.5)*4, r: 4};
+    }
+
+    function draw(){
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#0f0'; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#0f0'; ctx.fillRect(player.x, player.y, player.width, player.height);
+      ctx.fillStyle = '#00ffea'; ctx.fillRect(ai.x, ai.y, ai.width, ai.height);
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
+    }
+
+    function gameLoop(){
+      update(); draw(); requestAnimationFrame(gameLoop);
+    }
+
+    canvas.addEventListener('click', ()=>{ if(!gameActive){ gameActive = true; pScore = 0; aScore = 0; rally = 0; gamePaused = false; speedMode = false; document.getElementById('pong-status').textContent = 'PLAYING'; document.getElementById('pause-pong').textContent = 'PAUSE'; document.getElementById('speed-pong').textContent = '⚡ SPEED'; } });
+    document.getElementById('reset-pong').addEventListener('click', ()=>{ pScore = 0; aScore = 0; rally = 0; gameActive = false; resetBall(); gamePaused = false; speedMode = false; document.getElementById('pong-status').textContent = 'CLICK TO START'; document.getElementById('pause-pong').textContent = 'PAUSE'; document.getElementById('speed-pong').textContent = '⚡ SPEED'; });
+    document.getElementById('pause-pong').addEventListener('click', ()=>{ if(!gameActive) return; gamePaused = !gamePaused; document.getElementById('pause-pong').textContent = gamePaused ? 'RESUME' : 'PAUSE'; playSound('click'); });
+    document.getElementById('speed-pong').addEventListener('click', ()=>{ if(!gameActive) return; speedMode = !speedMode; document.getElementById('speed-pong').textContent = speedMode ? '🐢 NORMAL' : '⚡ SPEED'; playSound('eat'); });
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    gameLoop();
+  </script>
+</body>
+</html>

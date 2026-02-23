@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Bird | Tactical Games</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    #flappy-canvas{ display: block; margin: 20px auto; background: linear-gradient(180deg, #000a3d, #000); border: 2px solid var(--neon-1); }
+    .flappy-hud{ display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 300px; margin: 20px auto; }
+    .flappy-stat{ background: #0f0f0f; border: 1px solid var(--neon-1); padding: 10px; text-align: center; }
+    .flappy-stat-label{ color: #666; font-size: 12px; }
+    .flappy-stat-value{ color: var(--neon-1); font-size: 20px; font-weight: bold; margin-top: 5px; }
+    .flappy-instruction{ color: var(--neon-2); margin: 10px 0; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="../index.html" class="nav-link">HOME</a>
+    <a href="../missions.html" class="nav-link">MISSIONS</a>
+    <a href="tictactoe.html" class="nav-link">TIC-TAC-TOE</a>
+    <a href="memory.html" class="nav-link">MEMORY</a>
+    <a href="snake.html" class="nav-link">SNAKE</a>
+    <a href="flappy.html" class="nav-link active">FLAPPY</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>🐦 FLAPPY BIRD TACTICS</h1>
+    <p>Navigate through the obstacle course. Click or spacebar to flap.</p>
+    <div class="flappy-instruction" id="flappy-status">CLICK TO START</div>
+    <canvas id="flappy-canvas" width="320" height="480"></canvas>
+    <div class="flappy-hud">
+      <div class="flappy-stat">
+        <div class="flappy-stat-label">SCORE</div>
+        <div class="flappy-stat-value" id="flappy-score">0</div>
+      </div>
+      <div class="flappy-stat">
+        <div class="flappy-stat-label">BEST</div>
+        <div class="flappy-stat-value" id="flappy-best">0</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+      <button id="reset-flappy" style="margin-top: 20px;">NEW FLIGHT</button>
+      <button id="pause-flappy" style="margin-top: 20px;">PAUSE</button>
+    </div>
+  </main>
+
+  <script src="../js/games-common.js"></script>
+  <script>
+    const canvas = document.getElementById('flappy-canvas');
+    const ctx = canvas.getContext('2d');
+    let bird = {x: 60, y: 240, vy: 0, width: 20, height: 20, gravity: 0.4, jump: 10};
+    let pipes = [], score = 0, best = hget('flappy_best', 0), gameActive = false, gameOverFlag = false, gamePaused = false;
+
+    function spawnPipe(){
+      const gap = 100, minY = 60, maxY = canvas.height - gap - 60;
+      const pipeY = Math.random() * (maxY - minY) + minY;
+      pipes.push({x: canvas.width, y: pipeY, width: 60, gap: gap, scored: false});
+    }
+
+    function update(){
+      if(!gameActive || gamePaused) return;
+      bird.vy += bird.gravity;
+      bird.y += bird.vy;
+      if(bird.y + bird.height > canvas.height || bird.y < 0){
+        endGame();
+        return;
+      }
+      pipes.forEach(p=>p.x -= 5);
+      pipes = pipes.filter(p=>p.x + p.width > 0);
+      if(pipes.length === 0 || pipes[pipes.length-1].x < canvas.width - 150) spawnPipe();
+
+      pipes.forEach(p=>{
+        if(!p.scored && bird.x + bird.width > p.x && bird.x < p.x + p.width){
+          if(bird.y > p.y + p.gap){ endGame(); return; }
+          if(bird.y + bird.height < p.y){ endGame(); return; }
+        }
+        if(!p.scored && bird.x > p.x + p.width){
+          score++;
+          p.scored = true;
+          playSound('eat');
+          document.getElementById('flappy-score').textContent = score;
+        }
+      });
+    }
+
+    function draw(){
+      ctx.fillStyle = '#000a3d';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00ffea';
+      ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+      ctx.fillStyle = '#0f0';
+      pipes.forEach(p=>{
+        ctx.fillRect(p.x, 0, p.width, p.y);
+        ctx.fillRect(p.x, p.y + p.gap, p.width, canvas.height - p.y - p.gap);
+      });
+      ctx.strokeStyle = '#00ffea';
+      ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
+    }
+
+    function gameLoop(){
+      update(); draw(); requestAnimationFrame(gameLoop);
+    }
+
+    function endGame(){
+      gameActive = false;
+      gameOverFlag = true;
+      playSound('fail');
+      if(score > best){
+        best = score;
+        hset('flappy_best', best);
+        document.getElementById('flappy-best').textContent = best;
+        addXP(score * 10, 'flappy');
+      }
+      document.getElementById('flappy-status').textContent = `CRASHED | Score: ${score}`;
+    }
+
+    canvas.addEventListener('click', ()=>{
+      if(!gameActive){
+        if(gameOverFlag) return;
+        gameActive = true;
+        gameOverFlag = false;
+        document.getElementById('flappy-status').textContent = 'FLYING...';
+      } else bird.vy = -bird.jump;
+    });
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.code === 'Space'){
+        e.preventDefault();
+        if(!gameActive && !gameOverFlag){
+          gameActive = true;
+          document.getElementById('flappy-status').textContent = 'FLYING...';
+        } else if(gameActive) bird.vy = -bird.jump;
+      }
+    });
+
+    document.getElementById('reset-flappy').addEventListener('click', ()=>{
+      pipes = []; score = 0; bird.y = 240; bird.vy = 0; gameActive = false; gameOverFlag = false; gamePaused = false;
+      document.getElementById('flappy-score').textContent = '0';
+      document.getElementById('flappy-status').textContent = 'CLICK TO START';
+      document.getElementById('pause-flappy').textContent = 'PAUSE';
+    });
+    document.getElementById('pause-flappy').addEventListener('click', ()=>{
+      if(!gameActive || gameOverFlag) return;
+      gamePaused = !gamePaused;
+      document.getElementById('pause-flappy').textContent = gamePaused ? 'RESUME' : 'PAUSE';
+      document.getElementById('flappy-status').textContent = gamePaused ? '⏸ PAUSED' : 'FLYING...';
+    });
+
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    document.getElementById('flappy-best').textContent = best;
+    gameLoop();
+  </script>
+</body>
+</html>

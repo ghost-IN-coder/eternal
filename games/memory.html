@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Memory Match</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="../js/games-common.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="../index.html">HOME</a>
+    <a href="../index.html#games">ARCADE</a>
+    <a href="../missions.html">MISSIONS</a>
+    <a href="../gear.html">GEAR</a>
+    <a href="../highscores.html">HIGH SCORES</a>
+    <a href="../about.html">ABOUT</a>
+    <a href="../contact.html">CONTACT</a>
+    <button id="navMuteBtn" class="btn">🔊</button>
+  </nav>
+  <div class="wrap">
+    <h1>Memory Match</h1>
+    <div class="grid" id="grid"></div>
+    <div class="info hud">
+      <div id="score">Matches: 0</div>
+      <div id="timer">Time: 0.0s</div>
+      <div>Best: <span id="best">—</span></div>
+      <div id="muteContainer" class="flex-center"><button id="muteBtn" class="btn">🔊</button></div>
+      <button class="btn" id="reset">Shuffle</button>
+      <div class="mt-8"><a href="../index.html" class="card-link">← Back</a></div>
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const scoreEl = document.getElementById('score');
+    const reset = document.getElementById('reset');
+    const timerEl = document.getElementById('timer');
+    const bestEl = document.getElementById('best');
+
+    const pairs = ['★','▲','●','■','❤','✿'];
+    let deck = [];
+    let flipped = [];
+    let matches = 0;
+    let startTime = null; let timerId = null;
+
+    function build(){
+      deck = [...pairs, ...pairs].sort(()=>Math.random()-0.5);
+      grid.innerHTML = '';
+      deck.forEach((symbol,i)=>{
+        const c = document.createElement('div');
+        c.className = 'card';
+        c.dataset.idx = i;
+        c.dataset.sym = symbol;
+        c.textContent = '';
+        c.addEventListener('click', ()=> flipCard(c));
+        grid.appendChild(c);
+      });
+      flipped = [];
+      matches = 0;
+      updateScore();
+      stopTimer(); startTime = Date.now(); startTimer();
+    }
+
+    function updateScore(){ scoreEl.textContent = 'Matches: ' + matches; }
+
+    function flipCard(card){
+      if(card.classList.contains('flipped')) return;
+      card.classList.add('flipped');
+      card.textContent = card.dataset.sym;
+      flipped.push(card);
+      if(flipped.length === 2){
+        const [a,b] = flipped;
+        if(a.dataset.sym === b.dataset.sym){
+          matches++;
+          flipped = [];
+          updateScore();
+          playSound('click');
+          if(matches === pairs.length) setTimeout(()=> alert('You matched them all!'),200);
+        } else {
+          setTimeout(()=>{
+            a.classList.remove('flipped'); a.textContent='';
+            b.classList.remove('flipped'); b.textContent='';
+            flipped = [];
+            playSound('fail');
+          }, 700);
+        }
+      }
+    }
+
+    function startTimer(){ timerId = setInterval(()=>{ timerEl.textContent = 'Time: ' + (((Date.now()-startTime)/1000).toFixed(1)) + 's'; }, 100);}    
+    function stopTimer(){ if(timerId) clearInterval(timerId); timerId = null; if(startTime){ const t = (Date.now()-startTime)/1000; const best = hget('memory_best_time',null); if(!best || t < best){ hset('memory_best_time', t); bestEl.textContent = t.toFixed(1)+'s'; } else if(best) bestEl.textContent = best.toFixed(1)+'s'; startTime = null;} }
+
+    reset.addEventListener('click', ()=>{ playSound('click'); build(); });
+    // load best
+    setTimeout(()=>{ if(window.hget){ const b = hget('memory_best_time',null); if(b) bestEl.textContent = b.toFixed(1)+'s'; } }, 200);
+    build();
+
+    // mute button wiring
+    setTimeout(()=>{
+      const mb = document.getElementById('muteBtn');
+      try{ if(window.isMuted && window.isMuted()) mb.textContent='🔇'; else mb.textContent='🔊'; }catch(e){}
+      mb.addEventListener('click', ()=>{ try{ const m = window.toggleMute(); mb.textContent = m ? '🔇' : '🔊'; }catch(e){} });
+      try{ const navBtn = document.getElementById('navMuteBtn'); if(navBtn){ navBtn.textContent = (window.isMuted && window.isMuted()) ? '🔇' : '🔊'; navBtn.addEventListener('click', ()=>{ const m = window.toggleMute(); navBtn.textContent = m ? '🔇' : '🔊'; mb.textContent = navBtn.textContent; }); } }catch(e){}
+    },150);
+  </script>
+</body>
+</html>
