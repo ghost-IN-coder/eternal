@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About & Portfolio - Ghost</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="lines-bg" id="lines"></div>
+
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="index.html#games" class="nav-link">ARCADE</a>
+    <a href="profile.html" class="nav-link">PROFILE</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="settings.html" class="nav-link">SETTINGS</a>
+    <a href="achievements.html" class="nav-link">ACHIEVEMENTS</a>
+    <a href="about.html" class="nav-link" style="color: var(--neon-2);">ABOUT</a>
+    <button id="muteBtn" class="nav-link mute-btn" aria-label="Toggle sound">🔊</button>
+  </nav>
+
+  <main>
+    <h1 class="name" style="margin-top: 40px;">ABOUT THIS PROJECT</h1>
+    <p class="tagline">A Modern Arcade Portal with RPG Progression</p>
+
+    <!-- Project Overview -->
+    <section class="about-section">
+      <h2 style="color: var(--neon-1); margin-bottom: 20px;">PROJECT OVERVIEW</h2>
+      <div class="about-content">
+        <p>Ghost is a full-featured arcade gaming portal built with vanilla HTML5, CSS3, and JavaScript. This project demonstrates modern web development practices, game development mechanics, and UI/UX design patterns.</p>
+        <p>The platform combines 9 unique games with a comprehensive progression system, achievements, leaderboards, and player statistics tracking.</p>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="about-section">
+      <h2 style="color: var(--neon-1); margin-bottom: 20px;">TECHNOLOGY STACK</h2>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <h3>Frontend</h3>
+          <ul>
+            <li>HTML5 Canvas API</li>
+            <li>CSS3 (Animations, Gradients)</li>
+            <li>Vanilla JavaScript (ES6+)</li>
+            <li>LocalStorage API</li>
+            <li>Web Audio API</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3>Game Mechanics</h3>
+          <ul>
+            <li>Physics Simulation</li>
+            <li>Collision Detection</li>
+            <li>AI Algorithms</li>
+            <li>State Management</li>
+            <li>Score Tracking</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3>Features</h3>
+          <ul>
+            <li>XP & Leveling System</li>
+            <li>Achievement System</li>
+            <li>Session History</li>
+            <li>Sound Effects</li>
+            <li>Responsive Design</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Games Showcase -->
+    <section class="about-section">
+      <h2 style="color: var(--neon-1); margin-bottom: 30px;">GAMES COLLECTION</h2>
+      <div class="games-showcase">
+        <div class="showcase-card">
+          <h3>Tic-Tac-Toe</h3>
+          <p class="tech-tag">Turn-Based Strategy</p>
+          <p>Classic game with AI opponent using minimax algorithm for unbeatable play.</p>
+          <ul>
+            <li>✓ Single Player vs AI</li>
+            <li>✓ Difficulty Levels</li>
+            <li>✓ Win/Loss Tracking</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Memory Match</h3>
+          <p class="tech-tag">Puzzle</p>
+          <p>Flip cards and find matching pairs to test memory and cognitive skills.</p>
+          <ul>
+            <li>✓ Animated Card Flips</li>
+            <li>✓ Timer Tracking</li>
+            <li>✓ Score Multipliers</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Snake</h3>
+          <p class="tech-tag">Arcade</p>
+          <p>Navigate the snake to eat food and grow without hitting walls or yourself.</p>
+          <ul>
+            <li>✓ Smooth Movement</li>
+            <li>✓ Progressive Difficulty</li>
+            <li>✓ High Score Records</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Minesweeper</h3>
+          <p class="tech-tag">Puzzle</p>
+          <p>Tactical mine detection with difficulty modes, hint system, and pause feature.</p>
+          <ul>
+            <li>✓ 3 Difficulty Levels</li>
+            <li>✓ Hint System</li>
+            <li>✓ Flag Management</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Flappy Bird</h3>
+          <p class="tech-tag">Canvas Arcade</p>
+          <p>Navigate through obstacles with precise timing using HTML5 Canvas rendering.</p>
+          <ul>
+            <li>✓ Physics-Based</li>
+            <li>✓ Pause/Resume</li>
+            <li>✓ Smooth Animation</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Pong</h3>
+          <p class="tech-tag">Canvas Sports</p>
+          <p>Classic paddle battle against AI with adjustable difficulty and speed modes.</p>
+          <ul>
+            <li>✓ AI Opponent</li>
+            <li>✓ Speed Toggle</li>
+            <li>✓ Rally Counter</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>2048</h3>
+          <p class="tech-tag">Puzzle</p>
+          <p>Merge tiles to reach 2048 with undo functionality and strategic planning.</p>
+          <ul>
+            <li>✓ Undo System</li>
+            <li>✓ Smooth Animations</li>
+            <li>✓ Score Tracking</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Breakout</h3>
+          <p class="tech-tag">Canvas Action</p>
+          <p>Destroy bricks with a bouncing ball, manage paddle position for rebounds.</p>
+          <ul>
+            <li>✓ Physics Engine</li>
+            <li>✓ Lives System</li>
+            <li>✓ Pause Control</li>
+          </ul>
+        </div>
+        <div class="showcase-card">
+          <h3>Hangman</h3>
+          <p class="tech-tag">Word Game</p>
+          <p>Guess the word before running out of attempts in this classic word puzzle.</p>
+          <ul>
+            <li>✓ Large Word Bank</li>
+            <li>✓ Difficulty Levels</li>
+            <li>✓ Hint System</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Architecture -->
+    <section class="about-section">
+      <h2 style="color: var(--neon-1); margin-bottom: 20px;">SYSTEM ARCHITECTURE</h2>
+      <div class="architecture-grid">
+        <div class="arch-card">
+          <h3>🎮 Game Engine</h3>
+          <p>RequestAnimationFrame-based loop for smooth 60fps gameplay with collision detection and physics simulation.</p>
+        </div>
+        <div class="arch-card">
+          <h3>💾 Persistence Layer</h3>
+          <p>LocalStorage integration for player data, game scores, achievements, and session history without backend.</p>
+        </div>
+        <div class="arch-card">
+          <h3>🎯 Progression System</h3>
+          <p>Dynamic XP rewards, 25-level system, achievement unlocking, and badge progression tracking.</p>
+        </div>
+        <div class="arch-card">
+          <h3>🔊 Audio Engine</h3>
+          <p>Web Audio API synth sounds for click effects, game events, and audio toggle system.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="about-section">
+      <h2 style="color: var(--neon-1); margin-bottom: 20px;">KEY FEATURES</h2>
+      <div class="features-list">
+        <div class="feature-item">
+          <span class="feature-icon">⚙️</span>
+          <h3>Dynamic Game Parameters</h3>
+          <p>Each game supports pause, difficulty selection, and state management for flexible gameplay.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📊</span>
+          <h3>Statistics Dashboard</h3>
+          <p>Track wins, losses, playtime, and per-game statistics with visual breakdowns.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🏆</span>
+          <h3>Achievement System</h3>
+          <p>Unlock 20+ achievements for reaching milestones and accomplishing special challenges.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🎨</span>
+          <h3>Neon UI Theme</h3>
+          <p>Modern dark-mode design with glowing neon accents and smooth animations throughout.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📱</span>
+          <h3>Responsive Design</h3>
+          <p>Optimized for desktop, tablet, and mobile with adaptive layouts and touch-friendly controls.</p>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔄</span>
+          <h3>Session Management</h3>
+          <p>Automatic saving of game results, playtime, and player progress to persistent storage.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Developer Info -->
+    <section class="about-section" style="margin-bottom: 80px;">
+      <h2 style="color: var(--neon-1); margin-bottom: 20px;">DEVELOPER</h2>
+      <div class="developer-card">
+        <h3>Built with passion for gaming & web development</h3>
+        <p>This project showcases expertise in:</p>
+        <ul style="color: #a0d8c8; line-height: 1.8; font-size: 1.05rem;">
+          <li>✓ Full-stack game development</li>
+          <li>✓ Advanced JavaScript patterns and algorithms</li>
+          <li>✓ CSS animations and modern web design</li>
+          <li>✓ State management and data persistence</li>
+          <li>✓ Performance optimization and UX design</li>
+          <li>✓ Responsive and accessible interfaces</li>
+        </ul>
+        <p style="margin-top: 20px; color: #9fd;">
+          For inquiries or collaboration opportunities, please reach out through the contact section.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    document.getElementById('muteBtn').addEventListener('click', () => {
+      const muted = window.toggleMute ? window.toggleMute() : false;
+      document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+    });
+  </script>
+
+  <style>
+    .about-section {
+      margin: 60px 0;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.2), rgba(5, 15, 12, 0.1));
+      border: 1px solid rgba(0, 255, 170, 0.1);
+      border-radius: 12px;
+    }
+
+    .about-content {
+      color: #a0d8c8;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .about-content p {
+      margin-bottom: 15px;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .tech-card {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.4), rgba(5, 15, 12, 0.2));
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      padding: 25px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .tech-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 255, 170, 0.35);
+      box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+    }
+
+    .tech-card h3 {
+      color: var(--neon-2);
+      margin-bottom: 15px;
+    }
+
+    .tech-card ul {
+      list-style: none;
+      padding: 0;
+      color: #9fd;
+    }
+
+    .tech-card li {
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(0, 255, 170, 0.08);
+    }
+
+    .games-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .showcase-card {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.4), rgba(5, 15, 12, 0.2));
+      border: 2px solid rgba(0, 255, 170, 0.15);
+      padding: 25px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .showcase-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(0, 255, 170, 0.35);
+      box-shadow: 0 0 40px rgba(0, 255, 170, 0.15);
+    }
+
+    .showcase-card h3 {
+      color: var(--neon-2);
+      margin-bottom: 10px;
+    }
+
+    .tech-tag {
+      display: inline-block;
+      background: rgba(0, 255, 170, 0.1);
+      color: var(--neon-1);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .showcase-card p {
+      color: #a0d8c8;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    .showcase-card ul {
+      list-style: none;
+      padding: 0;
+      color: #9fd;
+      font-size: 0.9rem;
+    }
+
+    .showcase-card li {
+      padding: 3px 0;
+    }
+
+    .architecture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .arch-card {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.5), rgba(5, 15, 12, 0.3));
+      border: 1px solid rgba(0, 255, 170, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .arch-card h3 {
+      color: var(--neon-2);
+      margin-bottom: 12px;
+    }
+
+    .arch-card p {
+      color: #a0d8c8;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .features-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .feature-item {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.4), rgba(5, 15, 12, 0.2));
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      padding: 25px;
+      border-radius: 12px;
+      display: flex;
+      gap: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      border-color: rgba(0, 255, 170, 0.35);
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.6), rgba(5, 15, 12, 0.4));
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    .feature-item h3 {
+      color: var(--neon-2);
+      margin: 0 0 8px;
+    }
+
+    .feature-item p {
+      color: #a0d8c8;
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .developer-card {
+      background: linear-gradient(135deg, rgba(0, 255, 170, 0.1), rgba(0, 200, 150, 0.05));
+      border: 2px solid rgba(0, 255, 170, 0.3);
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .developer-card h3 {
+      color: var(--neon-2);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .developer-card p {
+      color: #a0d8c8;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .about-section {
+        padding: 25px;
+      }
+
+      .feature-item {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</body>
+</html>

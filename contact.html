@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact - Ghost</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="lines-bg" id="lines"></div>
+
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="index.html#games" class="nav-link">ARCADE</a>
+    <a href="profile.html" class="nav-link">PROFILE</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="settings.html" class="nav-link">SETTINGS</a>
+    <a href="achievements.html" class="nav-link">ACHIEVEMENTS</a>
+    <a href="about.html" class="nav-link">ABOUT</a>
+    <button id="muteBtn" class="nav-link mute-btn" aria-label="Toggle sound">🔊</button>
+  </nav>
+
+  <main>
+    <h1 class="name" style="margin-top: 40px;">GET IN TOUCH</h1>
+    <p class="tagline">Let's collaborate and create something amazing</p>
+
+    <!-- Contact Form -->
+    <section class="contact-section">
+      <div class="contact-container">
+        <div class="contact-form-wrapper">
+          <h2 style="color: var(--neon-1); margin-bottom: 30px; text-align: center;">SEND A MESSAGE</h2>
+          <form id="contact-form" class="contact-form">
+            <div class="form-group">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" name="name" required placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" required placeholder="Project inquiry, collaboration, etc.">
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" required placeholder="Tell me more about your project..."></textarea>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">SEND MESSAGE</button>
+          </form>
+          <p id="form-status" style="text-align: center; margin-top: 15px; color: #9fd;"></p>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+          <h2 style="color: var(--neon-1); margin-bottom: 30px; text-align: center;">CONTACT INFO</h2>
+          
+          <div class="info-card">
+            <h3>📧 Email</h3>
+            <p><a href="mailto:contact@ghostarcade.dev" style="color: var(--neon-2); text-decoration: none;">contact@ghostarcade.dev</a></p>
+          </div>
+
+          <div class="info-card">
+            <h3>🌐 Social & Links</h3>
+            <div class="social-links">
+              <a href="https://github.com" target="_blank" class="social-link">GitHub</a>
+              <a href="https://linkedin.com" target="_blank" class="social-link">LinkedIn</a>
+              <a href="https://twitter.com" target="_blank" class="social-link">Twitter</a>
+              <a href="https://discord.gg" target="_blank" class="social-link">Discord</a>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <h3>💼 Services Offered</h3>
+            <ul style="color: #a0d8c8; line-height: 2; margin: 0; padding-left: 0; list-style: none;">
+              <li>✓ Web Game Development</li>
+              <li>✓ UI/UX Design</li>
+              <li>✓ Interactive Portfolio</li>
+              <li>✓ Performance Optimization</li>
+              <li>✓ Technical Consultation</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <h3>🚀 Response Time</h3>
+            <p>Typically respond within 24-48 hours. For urgent matters, mention PRIORITY in subject line.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+      <h2 style="color: var(--neon-1); margin-bottom: 40px; text-align: center;">FREQUENTLY ASKED QUESTIONS</h2>
+      <div class="faq-grid">
+        <div class="faq-card">
+          <h3>What's your availability?</h3>
+          <p>I'm currently available for freelance projects, full-time roles, and collaboration opportunities. Flexible schedules can be arranged.</p>
+        </div>
+        <div class="faq-card">
+          <h3>What technologies do you specialize in?</h3>
+          <p>HTML5, CSS3, JavaScript (Vanilla & Frameworks), Canvas API, WebGL, Web Audio, LocalStorage, and modern web APIs.</p>
+        </div>
+        <div class="faq-card">
+          <h3>Do you offer custom game development?</h3>
+          <p>Yes! I can create custom games, simulations, and interactive experiences tailored to your specific requirements.</p>
+        </div>
+        <div class="faq-card">
+          <h3>What about project timelines?</h3>
+          <p>Timelines depend on project scope. Simple projects: 1-2 weeks. Complex games: 4-8 weeks. We'll discuss details upfront.</p>
+        </div>
+        <div class="faq-card">
+          <h3>Do you provide ongoing support?</h3>
+          <p>Absolutely! I offer post-launch support, bug fixes, feature additions, and performance optimization as needed.</p>
+        </div>
+        <div class="faq-card">
+          <h3>What's your project rate range?</h3>
+          <p>Rates vary based on complexity, timeline, and scope. Let's discuss your project details for an accurate quote.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    document.getElementById('muteBtn').addEventListener('click', () => {
+      const muted = window.toggleMute ? window.toggleMute() : false;
+      document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+    });
+
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const status = document.getElementById('form-status');
+      
+      status.textContent = '✓ Message received! We\'ll get back to you soon.';
+      status.style.color = '#0f0';
+      
+      let contacts = JSON.parse(localStorage.getItem('contact_messages') || '[]');
+      contacts.push({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        subject: formData.get('subject'),
+        message: formData.get('message'),
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem('contact_messages', JSON.stringify(contacts));
+      
+      window.playSound('win');
+      e.target.reset();
+      
+      setTimeout(() => {
+        status.textContent = '';
+      }, 5000);
+    });
+  </script>
+
+  <style>
+    .contact-section {
+      margin: 60px 0 80px;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.2), rgba(5, 15, 12, 0.1));
+      border: 1px solid rgba(0, 255, 170, 0.1);
+      border-radius: 12px;
+    }
+
+    .contact-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .contact-form-wrapper {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.3), rgba(5, 15, 12, 0.15));
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      padding: 30px;
+      border-radius: 12px;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      color: var(--neon-2);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      background: rgba(0, 255, 170, 0.04);
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      color: #a0d8c8;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: rgba(0, 255, 170, 0.4);
+      background: rgba(0, 255, 170, 0.08);
+      box-shadow: 0 0 15px rgba(0, 255, 170, 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-card {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.4), rgba(5, 15, 12, 0.2));
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      padding: 20px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+      border-color: rgba(0, 255, 170, 0.35);
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.6), rgba(5, 15, 12, 0.3));
+    }
+
+    .info-card h3 {
+      color: var(--neon-2);
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+    }
+
+    .info-card p {
+      color: #a0d8c8;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: inline-block;
+      background: rgba(0, 255, 170, 0.1);
+      color: var(--neon-1);
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .social-link:hover {
+      background: rgba(0, 255, 170, 0.15);
+      border-color: rgba(0, 255, 170, 0.4);
+      color: var(--neon-2);
+    }
+
+    .faq-section {
+      margin: 80px 0 80px;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .faq-card {
+      background: linear-gradient(135deg, rgba(0, 20, 15, 0.4), rgba(5, 15, 12, 0.2));
+      border: 1px solid rgba(0, 255, 170, 0.15);
+      padding: 25px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .faq-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 255, 170, 0.35);
+      box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+    }
+
+    .faq-card h3 {
+      color: var(--neon-2);
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+    }
+
+    .faq-card p {
+      color: #a0d8c8;
+      margin: 0;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 1000px) {
+      .contact-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .contact-section {
+        padding: 20px;
+      }
+
+      .contact-form-wrapper {
+        padding: 20px;
+      }
+    }
+  </style>
+</body>
+</html>

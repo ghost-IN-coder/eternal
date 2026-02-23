@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Missions — Ghost</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/games-common.js"></script>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="lines-bg" id="lines"></div>
+
+  <!-- Logo -->
+  <div class="tactical-skull">
+    <img src="images/logo.png" alt="logo">
+  </div>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="index.html#games">ARCADE</a>
+    <a href="missions.html">MISSIONS</a>
+    <a href="gear.html">GEAR</a>
+    <a href="highscores.html">HIGH SCORES</a>
+    <a href="about.html">ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+    <button id="muteBtn" class="btn">🔊</button>
+  </nav>
+
+  <main>
+    <h1>Missions</h1>
+    <p class="small"><span class="status-badge">ACTIVE</span> Mission Log & details — active, completed, and archive.</p>
+
+    <section>
+      <h2>Active Operations</h2>
+      <div class="missions">
+        <div class="mission-card">
+          <h3>Operation Shadowfall</h3>
+          <p>Objective: covert recon in simulated urban environment. Status: Active.</p>
+        </div>
+        <div class="mission-card">
+          <h3>Nightfall Protocol</h3>
+          <p>Objective: neon tactical animations and WebGL visuals. Status: Ongoing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Archive</h2>
+      <p>Completed missions and technical post-mortems are stored here for reference.</p>
+    </section>
+
+    <p><a href="index.html" class="card-link">← Back Home</a></p>
+  </main>
+
+  <script>
+    setTimeout(()=>{ try{ if(window.isMuted && window.isMuted()) document.getElementById('muteBtn').textContent='🔇'; }catch(e){} },150);
+    document.getElementById('muteBtn').addEventListener('click', ()=>{ try{ const m = window.toggleMute(); document.getElementById('muteBtn').textContent = m ? '🔇' : '🔊'; }catch(e){} });
+  </script>
+</body>
+</html>

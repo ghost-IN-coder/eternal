@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats | Tactical Games</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .stats-container{ max-width: 1000px; margin: 20px auto; }
+    .stat-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card{ background: #0f0f0f; border: 2px solid var(--neon-1); padding: 20px; border-radius: 4px; text-align: center; }
+    .stat-card h3{ color: var(--neon-2); margin: 0 0 10px 0; }
+    .stat-card .big-number{ color: var(--neon-1); font-size: 36px; font-weight: bold; margin: 10px 0; }
+    .stat-card .subtitle{ color: #666; font-size: 12px; }
+    .game-stats{ background: #0f0f0f; border: 2px solid var(--neon-1); padding: 20px; border-radius: 4px; margin-bottom: 30px; }
+    .game-row{ display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 15px; padding: 15px; border-bottom: 1px solid #1a1a1a; align-items: center; }
+    .game-row:last-child{ border-bottom: none; }
+    .game-name{ color: var(--neon-2); font-weight: bold; }
+    .game-stat{ color: #999; }
+    .progress-bar{ background: #1a1a1a; height: 6px; border-radius: 3px; overflow: hidden; margin: 10px 0; }
+    .progress-fill{ background: linear-gradient(90deg, var(--neon-1), var(--neon-2)); height: 100%; border-radius: 3px; }
+    .session-log{ background: #0f0f0f; border: 2px solid var(--neon-1); padding: 20px; border-radius: 4px; }
+    .session-item{ padding: 10px; background: #1a1a1a; border-left: 3px solid var(--neon-1); margin-bottom: 10px; font-size: 12px; }
+    .session-time{ color: #666; }
+    .session-xp{ color: var(--neon-2); font-weight: bold; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="settings.html" class="nav-link">SETTINGS</a>
+    <a href="achievements.html" class="nav-link">ACHIEVEMENTS</a>
+    <a href="stats.html" class="nav-link active">STATS</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>📊 MISSION STATISTICS</h1>
+    <p>Track your tactical gaming performance and progression</p>
+
+    <div class="stats-container">
+      <!-- Overview Cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <h3>⭐ LEVEL</h3>
+          <div class="big-number" id="player-level">0</div>
+          <div class="subtitle">Next: <span id="xp-to-next">1000</span> XP</div>
+          <div class="progress-bar" style="margin-top: 15px;">
+            <div class="progress-fill" id="level-progress" style="width: 50%;"></div>
+          </div>
+          <div class="subtitle" id="current-xp">0 / 1000 XP</div>
+        </div>
+
+        <div class="stat-card">
+          <h3>🎮 TOTAL GAMES</h3>
+          <div class="big-number" id="total-games">0</div>
+          <div class="subtitle">Sessions Completed</div>
+        </div>
+
+        <div class="stat-card">
+          <h3>🏆 ACHIEVEMENTS</h3>
+          <div class="big-number" id="achievements-count">0</div>
+          <div class="subtitle">of 7 Unlocked</div>
+        </div>
+
+        <div class="stat-card">
+          <h3>⏱️ TOTAL PLAYTIME</h3>
+          <div class="big-number" id="playtime">0h</div>
+          <div class="subtitle">Across All Games</div>
+        </div>
+      </div>
+
+      <!-- Per-Game Statistics -->
+      <div class="game-stats">
+        <h2 style="color: var(--neon-1); margin-top: 0; border-bottom: 2px solid var(--neon-1); padding-bottom: 10px;">GAME PERFORMANCE</h2>
+        <div class="game-row" style="font-weight: bold; border-bottom: 2px solid var(--neon-1);">
+          <div>Game</div>
+          <div style="text-align: right;">Best Score</div>
+          <div style="text-align: right;">Wins</div>
+          <div style="text-align: right;">Plays</div>
+          <div style="text-align: right;">Win Rate</div>
+        </div>
+        <div id="game-stats-list"></div>
+      </div>
+
+      <!-- Session History -->
+      <div class="session-log">
+        <h2 style="color: var(--neon-1); margin-top: 0; border-bottom: 2px solid var(--neon-1); padding-bottom: 10px;">SESSION HISTORY</h2>
+        <div id="session-history"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    function renderStats(){
+      // Player stats
+      const xp = getXP();
+      const level = getLevel();
+      const xpInLevel = xp % 1000;
+      const nextLevelXP = 1000;
+      const sessionHist = getSessionHistory();
+
+      document.getElementById('player-level').textContent = level;
+      document.getElementById('current-xp').textContent = xpInLevel + ' / 1000 XP';
+      document.getElementById('xp-to-next').textContent = (1000 - xpInLevel);
+      document.getElementById('level-progress').style.width = (xpInLevel / 1000 * 100) + '%';
+
+      // Games and achievements
+      document.getElementById('total-games').textContent = sessionHist.length;
+      document.getElementById('achievements-count').textContent = getUnlockedCount();
+
+      // Playtime (estimate 2min per game)
+      const playtime = Math.floor(sessionHist.length * 2 / 60);
+      document.getElementById('playtime').textContent = playtime + 'h';
+
+      // Game-specific stats
+      const gameStats = {};
+      sessionHist.forEach(session=>{
+        if(!gameStats[session.game]) gameStats[session.game] = {plays: 0, xp: 0};
+        gameStats[session.game].plays++;
+        gameStats[session.game].xp += session.xp;
+      });
+
+      const games = ['tictactoe', 'memory', 'snake', 'minesweeper', 'flappy', 'pong', '2048', 'breakout', 'hangman'];
+      const gameStatsList = document.getElementById('game-stats-list');
+      gameStatsList.innerHTML = '';
+
+      games.forEach(game=>{
+        const stats = gameStats[game] || {plays: 0, xp: 0};
+        const best = hget(game + '_best', 0) || hget(game + '_' + (game === 'tictactoe' ? 'X' : '') + '_wins', 0) || 0;
+        const wins = hget(game + '_wins', 0) || (game === 'tictactoe' ? hget('tictactoe_X_wins', 0) : 0);
+        const winRate = stats.plays > 0 ? ((wins / stats.plays) * 100).toFixed(0) : 0;
+
+        const row = document.createElement('div');
+        row.className = 'game-row';
+        row.innerHTML = `
+          <div class="game-name" style="text-transform: capitalize;">${game}</div>
+          <div style="text-align: right; color: var(--neon-2);">${best}</div>
+          <div style="text-align: right; color: var(--neon-1);">${wins}</div>
+          <div style="text-align: right; color: #999;">${stats.plays}</div>
+          <div style="text-align: right; color: var(--neon-2);">${winRate}%</div>
+        `;
+        gameStatsList.appendChild(row);
+      });
+
+      // Session history
+      const sessionEl = document.getElementById('session-history');
+      sessionEl.innerHTML = '';
+      const recent = sessionHist.slice(-20).reverse();
+      if(recent.length === 0){
+        sessionEl.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No sessions recorded yet</div>';
+      } else {
+        recent.forEach(session=>{
+          const time = new Date(session.time).toLocaleString();
+          const item = document.createElement('div');
+          item.className = 'session-item';
+          item.innerHTML = `<span class="session-time">${time}</span> - <span style="text-transform: capitalize;">${session.game}</span> <span class="session-xp">+${session.xp} XP</span>`;
+          sessionEl.appendChild(item);
+        });
+      }
+    }
+
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    renderStats();
+    setInterval(renderStats, 5000); // Update every 5 seconds
+  </script>
+</body>
+</html>

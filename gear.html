@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gear — Ghost</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/games-common.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="index.html#games">ARCADE</a>
+    <a href="missions.html">MISSIONS</a>
+    <a href="gear.html">GEAR</a>
+    <a href="highscores.html">HIGH SCORES</a>
+    <a href="about.html">ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+    <button id="muteBtn" class="btn">🔊</button>
+  </nav>
+
+  <main>
+    <h1>Gear</h1>
+    <p>Overview of tools, UI concepts, and visual assets.</p>
+    <section>
+      <h2>Available Assets</h2>
+      <ul>
+        <li>Skinned UI elements</li>
+        <li>Neon fonts and color tokens</li>
+        <li>SVG icon set (includes site logo)</li>
+      </ul>
+    </section>
+
+    <p><a href="index.html" class="card-link">← Back Home</a></p>
+  </main>
+
+  <script>
+    setTimeout(()=>{ try{ if(window.isMuted && window.isMuted()) document.getElementById('muteBtn').textContent='🔇'; }catch(e){} },150);
+    document.getElementById('muteBtn').addEventListener('click', ()=>{ try{ const m = window.toggleMute(); document.getElementById('muteBtn').textContent = m ? '🔇' : '🔊'; }catch(e){} });
+  </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard | Tactical Games</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .leaderboard-container{ max-width: 900px; margin: 20px auto; }
+    .leaderboard-tabs{ display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+    .leaderboard-tab{ padding: 10px 20px; background: #1a1a1a; border: 1px solid var(--neon-2); color: var(--neon-2); cursor: pointer; border-radius: 4px; font-weight: bold; transition: all 0.3s; }
+    .leaderboard-tab.active{ background: var(--neon-2); color: #000; box-shadow: 0 0 10px var(--neon-2); }
+    .leaderboard-table{ background: #0f0f0f; border: 2px solid var(--neon-1); border-radius: 4px; overflow: hidden; }
+    .table-header{ display: grid; grid-template-columns: 60px 1fr 150px 150px; gap: 15px; padding: 15px 20px; background: #1a1a1a; border-bottom: 2px solid var(--neon-1); font-weight: bold; color: var(--neon-1); }
+    .table-row{ display: grid; grid-template-columns: 60px 1fr 150px 150px; gap: 15px; padding: 15px 20px; border-bottom: 1px solid #1a1a1a; align-items: center; }
+    .table-row:hover{ background: #0f2a0f; }
+    .rank{ color: var(--neon-2); font-weight: bold; font-size: 16px; text-align: center; }
+    .rank.gold{ color: #ffd700; }
+    .rank.silver{ color: #c0c0c0; }
+    .rank.bronze{ color: #cd7f32; }
+    .player-name{ color: var(--neon-2); }
+    .score-value{ color: var(--neon-1); font-weight: bold; text-align: right; }
+    .date-value{ color: #999; text-align: right; font-size: 12px; }
+    .empty-state{ text-align: center; padding: 40px 20px; color: #666; }
+    .personal-best{ background: #0a2a0a; border-left: 3px solid var(--neon-1); }
+    .personal-best .player-name::before{ content: '★ '; color: var(--neon-1); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="settings.html" class="nav-link">SETTINGS</a>
+    <a href="achievements.html" class="nav-link">ACHIEVEMENTS</a>
+    <a href="stats.html" class="nav-link">STATS</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>🏅 LEADERBOARD</h1>
+    <p>Global rankings and personal best scores</p>
+
+    <div class="leaderboard-container">
+      <div class="leaderboard-tabs">
+        <button class="leaderboard-tab active" data-game="global">GLOBAL</button>
+        <button class="leaderboard-tab" data-game="tictactoe">TIC-TAC-TOE</button>
+        <button class="leaderboard-tab" data-game="memory">MEMORY</button>
+        <button class="leaderboard-tab" data-game="snake">SNAKE</button>
+        <button class="leaderboard-tab" data-game="minesweeper">MINESWEEPER</button>
+        <button class="leaderboard-tab" data-game="flappy">FLAPPY</button>
+        <button class="leaderboard-tab" data-game="pong">PONG</button>
+        <button class="leaderboard-tab" data-game="2048">2048</button>
+        <button class="leaderboard-tab" data-game="breakout">BREAKOUT</button>
+        <button class="leaderboard-tab" data-game="hangman">HANGMAN</button>
+      </div>
+
+      <div class="leaderboard-table">
+        <div class="table-header">
+          <div>RANK</div>
+          <div>GAME</div>
+          <div>SCORE</div>
+          <div>DATE</div>
+        </div>
+        <div id="leaderboard-body"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    let currentGame = 'global';
+
+    function renderLeaderboard(){
+      const body = document.getElementById('leaderboard-body');
+      const sessionHist = getSessionHistory();
+      
+      if(sessionHist.length === 0){
+        body.innerHTML = '<div class="empty-state">No games played yet. Start playing to see your scores!</div>';
+        return;
+      }
+
+      // Filter by game
+      let filtered = sessionHist;
+      if(currentGame !== 'global'){
+        filtered = sessionHist.filter(s=>s.game === currentGame);
+      }
+
+      // Sort by XP (descending)
+      filtered.sort((a,b)=>b.xp - a.xp);
+
+      // Render top 20
+      body.innerHTML = '';
+      filtered.slice(0, 20).forEach((entry, idx)=>{
+        const rank = idx + 1;
+        const row = document.createElement('div');
+        row.className = 'table-row';
+        
+        let rankClass = '';
+        if(rank === 1) rankClass = ' gold';
+        else if(rank === 2) rankClass = ' silver';
+        else if(rank === 3) rankClass = ' bronze';
+
+        const date = new Date(entry.time).toLocaleDateString();
+        
+        row.innerHTML = `
+          <div class="rank${rankClass}">#${rank}</div>
+          <div class="player-name" style="text-transform: capitalize;">${currentGame === 'global' ? entry.game : 'You'}</div>
+          <div class="score-value">${entry.xp} XP</div>
+          <div class="date-value">${date}</div>
+        `;
+        body.appendChild(row);
+      });
+
+      if(filtered.length === 0){
+        body.innerHTML = '<div class="empty-state">No scores recorded for this game yet.</div>';
+      }
+    }
+
+    // Tab switching
+    document.querySelectorAll('.leaderboard-tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        document.querySelectorAll('.leaderboard-tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        currentGame = tab.dataset.game;
+        renderLeaderboard();
+      });
+    });
+
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    renderLeaderboard();
+    setInterval(renderLeaderboard, 5000); // Update every 5 seconds
+  </script>
+</body>
+</html>

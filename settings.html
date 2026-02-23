@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings | Tactical Games</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .settings-container{ max-width: 600px; margin: 20px auto; }
+    .settings-section{ background: #0f0f0f; border: 2px solid var(--neon-1); padding: 20px; margin-bottom: 20px; border-radius: 4px; }
+    .settings-section h2{ color: var(--neon-1); margin-top: 0; border-bottom: 1px solid var(--neon-2); padding-bottom: 10px; }
+    .setting-item{ display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px; background: #1a1a1a; border-radius: 4px; }
+    .setting-label{ color: var(--neon-2); font-weight: bold; }
+    .setting-control{ display: flex; gap: 10px; align-items: center; }
+    input[type="range"]{ width: 150px; }
+    select{ background: #1a1a1a; color: var(--neon-1); border: 1px solid var(--neon-2); padding: 8px; border-radius: 3px; cursor: pointer; }
+    .toggle-switch{ display: inline-block; width: 50px; height: 24px; background: #333; border-radius: 12px; cursor: pointer; position: relative; transition: background 0.3s; }
+    .toggle-switch.active{ background: var(--neon-1); }
+    .toggle-slider{ position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left 0.3s; }
+    .toggle-switch.active .toggle-slider{ left: 28px; }
+    .btn-reset{ background: #8b0000; color: #fff; border: 1px solid #ff3333; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+    .btn-reset:hover{ box-shadow: 0 0 10px #ff3333; }
+    .info-text{ color: #999; font-size: 12px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="settings.html" class="nav-link active">SETTINGS</a>
+    <a href="achievements.html" class="nav-link">ACHIEVEMENTS</a>
+    <a href="stats.html" class="nav-link">STATS</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>⚙️ SETTINGS</h1>
+
+    <div class="settings-container">
+      <!-- Audio Settings -->
+      <div class="settings-section">
+        <h2>🔊 AUDIO</h2>
+        <div class="setting-item">
+          <span class="setting-label">Master Volume</span>
+          <div class="setting-control">
+            <input type="range" id="volume-slider" min="0" max="100" value="80">
+            <span id="volume-percent">80%</span>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Sound Effects</span>
+          <div class="toggle-switch" id="sfx-toggle">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Mute All</span>
+          <div class="toggle-switch" id="global-mute-toggle">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Display Settings -->
+      <div class="settings-section">
+        <h2>🎨 DISPLAY</h2>
+        <div class="setting-item">
+          <span class="setting-label">Theme</span>
+          <div class="setting-control">
+            <select id="theme-select">
+              <option value="dark">Dark Mode</option>
+              <option value="light">Light Mode</option>
+              <option value="neon">Neon Mode</option>
+              <option value="matrix">Matrix Mode</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Animation Speed</span>
+          <div class="setting-control">
+            <select id="anim-speed">
+              <option value="slow">Slow</option>
+              <option value="normal" selected>Normal</option>
+              <option value="fast">Fast</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Enable Particles</span>
+          <div class="toggle-switch" id="particles-toggle">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gameplay Settings -->
+      <div class="settings-section">
+        <h2>🎮 GAMEPLAY</h2>
+        <div class="setting-item">
+          <span class="setting-label">Difficulty</span>
+          <div class="setting-control">
+            <select id="difficulty-select">
+              <option value="easy">Easy</option>
+              <option value="normal" selected>Normal</option>
+              <option value="hard">Hard</option>
+              <option value="insane">Insane</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Keyboard Shortcuts</span>
+          <div class="toggle-switch" id="shortcuts-toggle active">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Auto-Save Progress</span>
+          <div class="toggle-switch" id="autosave-toggle active">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Management -->
+      <div class="settings-section">
+        <h2>💾 DATA</h2>
+        <div class="setting-item">
+          <span class="setting-label">Export Save Data</span>
+          <button style="background: var(--neon-1); color: #000; border: none; padding: 8px 16px; cursor: pointer; border-radius: 3px; font-weight: bold;" id="export-btn">EXPORT</button>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Storage Used</span>
+          <span id="storage-used" style="color: var(--neon-2);">Calculating...</span>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Reset All Data</span>
+          <button class="btn-reset" id="reset-btn">RESET ALL</button>
+          <div class="info-text">Warning: This cannot be undone</div>
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts Reference -->
+      <div class="settings-section">
+        <h2>⌨️ KEYBOARD SHORTCUTS</h2>
+        <div style="color: #999; font-size: 13px; line-height: 1.8;">
+          <div><strong>W/A/S/D</strong> - Game Navigation & Movement</div>
+          <div><strong>SPACEBAR</strong> - Jump/Flap/Confirm</div>
+          <div><strong>ENTER</strong> - Submit/Start</div>
+          <div><strong>ESC</strong> - Back/Cancel</div>
+          <div><strong>M</strong> - Toggle Mute</div>
+          <div><strong>P</strong> - Pause Game</div>
+          <div><strong>R</strong> - Reset/Restart</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    // Load settings from localStorage
+    function loadSettings(){
+      const volume = hget('settings_volume', 80);
+      const sfx = hget('settings_sfx', true);
+      const theme = hget('settings_theme', 'dark');
+      const animSpeed = hget('settings_anim_speed', 'normal');
+      const particles = hget('settings_particles', true);
+      const difficulty = hget('settings_difficulty', 'normal');
+      const shortcuts = hget('settings_shortcuts', true);
+      const autosave = hget('settings_autosave', true);
+
+      document.getElementById('volume-slider').value = volume;
+      document.getElementById('volume-percent').textContent = volume + '%';
+      document.getElementById('theme-select').value = theme;
+      document.getElementById('anim-speed').value = animSpeed;
+      document.getElementById('difficulty-select').value = difficulty;
+
+      updateToggle('sfx-toggle', sfx);
+      updateToggle('particles-toggle', particles);
+      updateToggle('shortcuts-toggle', shortcuts);
+      updateToggle('autosave-toggle', autosave);
+      updateToggle('global-mute-toggle', isMuted());
+
+      calculateStorage();
+    }
+
+    function updateToggle(id, state){
+      const el = document.getElementById(id);
+      if(state) el.classList.add('active');
+      else el.classList.remove('active');
+    }
+
+    function calculateStorage(){
+      let total = 0;
+      for(let key in localStorage){
+        total += key.length + localStorage[key].length;
+      }
+      document.getElementById('storage-used').textContent = (total / 1024).toFixed(2) + ' KB';
+    }
+
+    // Volume control
+    document.getElementById('volume-slider').addEventListener('change', (e)=>{
+      const vol = e.target.value;
+      hset('settings_volume', vol);
+      document.getElementById('volume-percent').textContent = vol + '%';
+    });
+
+    // Toggles
+    document.getElementById('sfx-toggle').addEventListener('click', function(){
+      this.classList.toggle('active');
+      hset('settings_sfx', this.classList.contains('active'));
+    });
+
+    document.getElementById('particles-toggle').addEventListener('click', function(){
+      this.classList.toggle('active');
+      hset('settings_particles', this.classList.contains('active'));
+    });
+
+    document.getElementById('shortcuts-toggle').addEventListener('click', function(){
+      this.classList.toggle('active');
+      hset('settings_shortcuts', this.classList.contains('active'));
+    });
+
+    document.getElementById('autosave-toggle').addEventListener('click', function(){
+      this.classList.toggle('active');
+      hset('settings_autosave', this.classList.contains('active'));
+    });
+
+    document.getElementById('global-mute-toggle').addEventListener('click', function(){
+      const newMuted = !this.classList.contains('active');
+      setMuted(newMuted);
+      updateToggle('global-mute-toggle', newMuted);
+      document.getElementById('mute-btn').textContent = newMuted ? '🔇 MUTED' : '🔊 AUDIO';
+      playSound(newMuted ? 'fail' : 'eat');
+    });
+
+    // Select controls
+    document.getElementById('theme-select').addEventListener('change', (e)=>{
+      hset('settings_theme', e.target.value);
+      // Theme application would be done via CSS class on body
+      document.body.className = 'theme-' + e.target.value;
+    });
+
+    document.getElementById('anim-speed').addEventListener('change', (e)=>{
+      hset('settings_anim_speed', e.target.value);
+      document.documentElement.style.setProperty('--anim-speed', e.target.value === 'fast' ? '0.5s' : e.target.value === 'slow' ? '2s' : '1s');
+    });
+
+    document.getElementById('difficulty-select').addEventListener('change', (e)=>{
+      hset('settings_difficulty', e.target.value);
+    });
+
+    // Export data
+    document.getElementById('export-btn').addEventListener('click', ()=>{
+      const data = {};
+      for(let key in localStorage){
+        data[key] = localStorage[key];
+      }
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'tactical-games-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      playSound('eat');
+    });
+
+    // Reset all data
+    document.getElementById('reset-btn').addEventListener('click', ()=>{
+      if(confirm('This will permanently delete all your game data and settings. Are you sure?')){
+        localStorage.clear();
+        playSound('fail');
+        alert('All data reset. Page will reload.');
+        location.reload();
+      }
+    });
+
+    // Mute button
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; updateToggle('global-mute-toggle', muted); });
+
+    loadSettings();
+  </script>
+</body>
+</html>

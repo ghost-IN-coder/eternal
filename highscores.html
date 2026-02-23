@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>High Scores — Ghost Arcade</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/games-common.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="index.html#games">ARCADE</a>
+    <a href="missions.html">MISSIONS</a>
+    <a href="gear.html">GEAR</a>
+    <a href="highscores.html">HIGH SCORES</a>
+    <a href="about.html">ABOUT</a>
+    <a href="contact.html">CONTACT</a>
+    <button id="muteBtn" class="btn">🔊</button>
+  </nav>
+
+  <main>
+    <h1>High Scores</h1>
+    <p>Stored scores and records for games on this site (from localStorage):</p>
+    <ul>
+      <li>Tic‑Tac‑Toe — X wins: <span id="tX">0</span>, O wins: <span id="tO">0</span>, Draws: <span id="tD">0</span></li>
+      <li>Memory — Best time: <span id="mBest">—</span></li>
+      <li>Snake — High score: <span id="sHigh">0</span></li>
+    </ul>
+    <p><a href="index.html" class="card-link">← Back Home</a></p>
+  </main>
+
+  <script>
+    setTimeout(()=>{
+      try{
+        document.getElementById('tX').textContent = hget('tictactoe_X_wins',0)||0;
+        document.getElementById('tO').textContent = hget('tictactoe_O_wins',0)||0;
+        document.getElementById('tD').textContent = hget('tictactoe_draws',0)||0;
+        const mb = hget('memory_best_time',null); if(mb) document.getElementById('mBest').textContent = mb.toFixed(1) + 's';
+        document.getElementById('sHigh').textContent = hget('snake_high',0)||0;
+        if(window.isMuted && window.isMuted()) document.getElementById('muteBtn').textContent='🔇';
+      }catch(e){}
+    },200);
+    document.getElementById('muteBtn').addEventListener('click', ()=>{ try{ const m = window.toggleMute(); document.getElementById('muteBtn').textContent = m ? '🔇' : '🔊'; }catch(e){} });
+  </script>
+</body>
+</html>

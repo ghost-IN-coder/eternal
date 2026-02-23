@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievements | Tactical Games</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .achievements-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; max-width: 1000px; margin: 20px auto; }
+    .achievement-card{ background: #0f0f0f; border: 2px solid #333; padding: 20px; border-radius: 4px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .achievement-card:hover{ border-color: var(--neon-1); box-shadow: 0 0 10px rgba(0,255,0,0.3); }
+    .achievement-card.unlocked{ border-color: var(--neon-1); background: #0a2a0a; }
+    .achievement-icon{ font-size: 48px; margin: 10px 0; }
+    .achievement-name{ color: var(--neon-2); font-weight: bold; margin: 10px 0; }
+    .achievement-desc{ color: #999; font-size: 13px; line-height: 1.4; }
+    .achievement-status{ color: #666; font-size: 11px; margin-top: 10px; }
+    .unlocked-stamp{ color: var(--neon-1); font-weight: bold; }
+    .progress-section{ max-width: 600px; margin: 20px auto; background: #0f0f0f; padding: 20px; border: 2px solid var(--neon-1); border-radius: 4px; }
+    .progress-bar{ background: #1a1a1a; height: 30px; border-radius: 4px; overflow: hidden; margin: 20px 0; }
+    .progress-fill{ background: linear-gradient(90deg, var(--neon-1), var(--neon-2)); height: 100%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="settings.html" class="nav-link">SETTINGS</a>
+    <a href="achievements.html" class="nav-link active">ACHIEVEMENTS</a>
+    <a href="stats.html" class="nav-link">STATS</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>🏆 ACHIEVEMENTS</h1>
+    <p>Unlock badges and unlock rewards for your tactical prowess</p>
+
+    <div class="progress-section">
+      <h2 style="color: var(--neon-1); margin-top: 0; text-align: center;">ACHIEVEMENT PROGRESS</h2>
+      <div id="progress-count" style="text-align: center; color: var(--neon-2); font-size: 18px; font-weight: bold; margin-bottom: 15px;">0 / 7 Unlocked</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-bar-fill" style="width: 0%;">0%</div>
+      </div>
+    </div>
+
+    <div class="achievements-grid" id="achievements-grid"></div>
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    function renderAchievements(){
+      const achievements = getAchievements();
+      const unlockedCount = getUnlockedCount();
+      const totalCount = Object.keys(achievements).length;
+
+      // Update progress
+      const percent = (unlockedCount / totalCount) * 100;
+      document.getElementById('progress-count').textContent = unlockedCount + ' / ' + totalCount + ' Unlocked';
+      document.getElementById('progress-bar-fill').style.width = percent + '%';
+      document.getElementById('progress-bar-fill').textContent = Math.round(percent) + '%';
+
+      // Render achievement cards
+      const grid = document.getElementById('achievements-grid');
+      grid.innerHTML = '';
+
+      Object.entries(achievements).forEach(([achID, ach])=>{
+        const unlocked = hasAchievement(achID);
+        const card = document.createElement('div');
+        card.className = 'achievement-card' + (unlocked ? ' unlocked' : '');
+        card.innerHTML = `
+          <div class="achievement-icon">${ach.icon}</div>
+          <div class="achievement-name">${ach.name}</div>
+          <div class="achievement-desc">${ach.desc}</div>
+          <div class="achievement-status">
+            ${unlocked ? '<span class="unlocked-stamp">✓ UNLOCKED</span>' : '<span>LOCKED</span>'}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+    renderAchievements();
+    setInterval(renderAchievements, 2000); // Update every 2 seconds to reflect unlocks
+  </script>
+</body>
+</html>

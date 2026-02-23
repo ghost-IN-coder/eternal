@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & Tutorials | Tactical Games</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .help-container{ max-width: 1000px; margin: 20px auto; }
+    .tutorial-section{ background: #0f0f0f; border: 2px solid var(--neon-1); padding: 25px; margin-bottom: 20px; border-radius: 4px; }
+    .tutorial-section h2{ color: var(--neon-1); margin-top: 0; border-bottom: 2px solid var(--neon-2); padding-bottom: 10px; }
+    .tutorial-section h3{ color: var(--neon-2); margin-top: 20px; }
+    .tutorial-content{ color: #ccc; line-height: 1.8; }
+    .game-guide{ background: #1a1a1a; padding: 15px; margin: 15px 0; border-left: 3px solid var(--neon-1); border-radius: 3px; }
+    .game-guide strong{ color: var(--neon-2); }
+    .shortcut-list{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin: 20px 0; }
+    .shortcut-item{ background: #1a1a1a; padding: 15px; border-radius: 3px; border-left: 2px solid var(--neon-1); }
+    .key-code{ background: #0f0f0f; color: var(--neon-1); padding: 2px 8px; border-radius: 3px; font-family: monospace; font-weight: bold; }
+    .tip-box{ background: #0a2a0a; border: 1px solid var(--neon-1); padding: 15px; margin: 15px 0; border-radius: 3px; }
+    .tip-box::before{ content: '💡 TIP: '; color: var(--neon-1); font-weight: bold; }
+    .faq-item{ background: #1a1a1a; padding: 15px; margin-bottom: 10px; border-radius: 3px; }
+    .faq-question{ color: var(--neon-2); font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .faq-question:hover{ color: var(--neon-1); }
+    .faq-answer{ color: #999; margin-top: 10px; display: none; }
+    .faq-item.active .faq-answer{ display: block; }
+    .faq-toggle{ color: var(--neon-1); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="tactical-skull"></div>
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="missions.html" class="nav-link">MISSIONS</a>
+    <a href="help.html" class="nav-link active">HELP</a>
+    <a href="achievements.html" class="nav-link">ACHIEVEMENTS</a>
+    <a href="leaderboard.html" class="nav-link">LEADERBOARD</a>
+    <button id="mute-btn" class="nav-link mute-btn">🔊 AUDIO</button>
+  </nav>
+
+  <main>
+    <h1>❓ HELP & TUTORIALS</h1>
+    <p>Learn how to master each game and maximize your tactical gaming potential</p>
+
+    <div class="help-container">
+      <!-- Getting Started -->
+      <div class="tutorial-section">
+        <h2>🚀 GETTING STARTED</h2>
+        <div class="tutorial-content">
+          <h3>Welcome to Tactical Games</h3>
+          <p>This is a comprehensive tactical gaming platform featuring 9 different games, achievement tracking, progression system, and real-time leaderboards.</p>
+          
+          <h3>First Steps</h3>
+          <ol>
+            <li><strong>Play Games</strong> - Visit the home page and select any game to start playing</li>
+            <li><strong>Earn XP</strong> - Every game you complete grants Experience Points</li>
+            <li><strong>Level Up</strong> - Accumulate 1000 XP to level up</li>
+            <li><strong>Unlock Achievements</strong> - Complete special challenges to unlock badges</li>
+            <li><strong>Compete</strong> - Check the leaderboard to see how you rank against others</li>
+          </ol>
+
+          <div class="tip-box">Make sure to keep playing consistently to unlock more achievements and level up faster!</div>
+        </div>
+      </div>
+
+      <!-- Game Guides -->
+      <div class="tutorial-section">
+        <h2>🎮 GAME GUIDES</h2>
+        
+        <h3>TIC-TAC-TOE</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Get three marks in a row (horizontal, vertical, or diagonal)<br>
+          <strong>How to Play:</strong> Click a cell to place your mark (X). The AI plays as (O). Win by getting 3 in a row before the AI does.<br>
+          <strong>Strategy:</strong> Control the center, corner placement matters. Try to create multiple winning paths.
+        </div>
+
+        <h3>MEMORY</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Match all pairs in the fastest time<br>
+          <strong>How to Play:</strong> Click cards to flip them and find matching pairs. When you match a pair, they stay flipped.<br>
+          <strong>Strategy:</strong> Remember card positions, flip strategically. Pattern recognition is key!
+        </div>
+
+        <h3>SNAKE</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Eat food to grow and avoid hitting walls or yourself<br>
+          <strong>How to Play:</strong> Use arrow keys or WASD to move. Eat the red square (food) to grow longer.<br>
+          <strong>Strategy:</strong> Plan ahead, avoid boxing yourself in. Use walls to create safe paths.
+        </div>
+
+        <h3>MINESWEEPER</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Clear the grid without detonating any mines<br>
+          <strong>How to Play:</strong> Left-click to reveal cells. Right-click to flag mines. Numbers show mine count nearby.<br>
+          <strong>Difficulty Levels:</strong> Easy (8x8, 10 mines) | Medium (12x12, 30 mines) | Hard (16x16, 50 mines)
+        </div>
+
+        <h3>FLAPPY BIRD</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Navigate through pipe obstacles and achieve the highest score<br>
+          <strong>How to Play:</strong> Click or press SPACEBAR to flap. Pass through the gap between pipes.<br>
+          <strong>Strategy:</strong> Timing is everything. Flap early and often to maintain altitude.
+        </div>
+
+        <h3>PONG</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Beat the AI by scoring 5 points first<br>
+          <strong>How to Play:</strong> Use W/S keys to move your paddle. Ball bounces off paddles and walls. Score when opponent misses.<br>
+          <strong>Strategy:</strong> Position paddle at ball trajectory, control ball angle with paddle placement.
+        </div>
+
+        <h3>2048</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Slide tiles to combine matching numbers and reach 2048<br>
+          <strong>How to Play:</strong> Use arrow keys or WASD to move. When two tiles with the same number touch, they merge.<br>
+          <strong>Strategy:</strong> Keep your highest tile in a corner, plan merges ahead, don't fill the grid haphazardly.
+        </div>
+
+        <h3>BREAKOUT</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Destroy all bricks before the ball falls<br>
+          <strong>How to Play:</strong> Move your mouse to control the paddle. Bounce the ball to hit bricks. Survive 3 lives.<br>
+          <strong>Strategy:</strong> Lead the ball, position paddle for maximum rebound angles. Keep the ball in play!
+        </div>
+
+        <h3>HANGMAN</h3>
+        <div class="game-guide">
+          <strong>Objective:</strong> Guess the word before running out of attempts<br>
+          <strong>How to Play:</strong> Click letters to guess. You have 6 wrong guesses allowed.<br>
+          <strong>Strategy:</strong> Start with common letters (E, A, R, O), look for patterns, use context clues.
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts -->
+      <div class="tutorial-section">
+        <h2>⌨️ KEYBOARD SHORTCUTS</h2>
+        <div class="shortcut-list">
+          <div class="shortcut-item">
+            <div><span class="key-code">↑ ↓ ← →</span></div>
+            <div>Move/Navigate</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">WASD</span></div>
+            <div>Alternative Movement</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">SPACE</span></div>
+            <div>Jump/Flap/Confirm</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">ENTER</span></div>
+            <div>Submit/Start</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">ESC</span></div>
+            <div>Back/Cancel</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">M</span></div>
+            <div>Toggle Mute</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">P</span></div>
+            <div>Pause Game</div>
+          </div>
+          <div class="shortcut-item">
+            <div><span class="key-code">R</span></div>
+            <div>Reset/Restart</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="tutorial-section">
+        <h2>❓ FREQUENTLY ASKED QUESTIONS</h2>
+        <div id="faq-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/games-common.js"></script>
+  <script>
+    const faqs = [
+      {q: "How do I earn XP?", a: "You earn XP by playing games. Each game grants different amounts of XP based on performance. Harder games and higher scores grant more XP."},
+      {q: "How do levels work?", a: "Every 1000 XP grants you one level. You can see your current level and progress on the Stats page. Leveling up provides bragging rights and achievement progress."},
+      {q: "Can I export my data?", a: "Yes! Go to Settings > Data > Export Save Data to download a JSON backup of all your game data and progress."},
+      {q: "How do I reset my progress?", a: "Go to Settings > Data > Reset All Data. WARNING: This action cannot be undone and will permanently delete all your data!"},
+      {q: "Are there multiple difficulty levels?", a: "Some games like Minesweeper offer difficulty selection. Most games scale dynamically based on your performance."},
+      {q: "How do achievements work?", a: "Achievements are special challenges like 'Win 10 games' or 'Complete Memory with perfect time'. Unlock them by playing and completing milestones."},
+      {q: "Is there a leaderboard?", a: "Yes! Visit the Leaderboard page to see top scores across all games. Each game also has its own individual leaderboard."},
+      {q: "Can I turn off sound?", a: "Yes! Click the audio button in the top right corner or go to Settings > Audio to mute all sounds."},
+    ];
+
+    const container = document.getElementById('faq-container');
+    faqs.forEach((faq, idx)=>{
+      const item = document.createElement('div');
+      item.className = 'faq-item';
+      item.innerHTML = `
+        <div class="faq-question">
+          <span>${faq.q}</span>
+          <span class="faq-toggle">+</span>
+        </div>
+        <div class="faq-answer">${faq.a}</div>
+      `;
+      item.addEventListener('click', ()=>{
+        item.classList.toggle('active');
+        item.querySelector('.faq-toggle').textContent = item.classList.contains('active') ? '−' : '+';
+      });
+      container.appendChild(item);
+    });
+
+    document.getElementById('mute-btn').addEventListener('click', ()=>{ const muted = toggleMute(); document.getElementById('mute-btn').textContent = muted ? '🔇 MUTED' : '🔊 AUDIO'; });
+  </script>
+</body>
+</html>
